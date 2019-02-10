@@ -21,10 +21,12 @@ using namespace std;
 // Namespace used for global variables
 namespace prAstar
 {
-	const char wordsList[2][20] = {
-		"Benjamin Kleynhans",
-		"Adam McAree"
-	};
+	float startPos = 0;
+	float* pStartPos = &startPos;
+
+	float endPos = 0;
+	float* pEndPos = &endPos;
+	
 
 }
 
@@ -33,9 +35,10 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {
-	char* teamMembers[] = { 0 };
+	char teamMembers[] = "The team members are Adam McAree and Benjamin Kleynhans\0";
+	char* pTeamMembers = teamMembers;	
 
-	return *teamMembers;
+	return pTeamMembers;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
@@ -90,5 +93,5 @@ __declspec(dllexport) void SetEnd(int xpos, int ypos)
 // x and y locations for the end have not been saved yet, then return -1 for both.
 __declspec(dllexport) void GetEnd(int& xpos, int& ypos)
 {
-
+	
 }
