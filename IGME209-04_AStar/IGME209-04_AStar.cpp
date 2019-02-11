@@ -21,13 +21,13 @@ using namespace std;
 // Namespace used for global variables
 namespace prAstar
 {
-	float startPos = 0;
-	float* pStartPos = &startPos;
+	const char* teamMembers{ "The team members are Adam McAree and Benjamin Kleynhans" };
 
-	float endPos = 0;
-	float* pEndPos = &endPos;
-	
+	float* pXPosStart = 0;	
+	float* pYPosStart = 0;
 
+	float* pXPosEnd = 0;
+	float* pYPosEnd = 0;
 }
 
 // Ben
@@ -35,10 +35,7 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {
-	char teamMembers[] = "The team members are Adam McAree and Benjamin Kleynhans\0";
-	char* pTeamMembers = teamMembers;	
-
-	return pTeamMembers;
+	return prAstar::teamMembers;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
@@ -48,7 +45,7 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
 
 }
 
-// Gets the maze data from the DLL.  Return the maze data taht was passed in using 
+// Gets the maze data from the DLL.  Return the maze data that was passed in using 
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
