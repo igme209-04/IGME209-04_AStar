@@ -23,11 +23,11 @@ namespace prAstar
 {
 	const char* teamMembers{ "The team members are Adam McAree and Benjamin Kleynhans" };
 
-	float* pXPosStart = 0;	
-	float* pYPosStart = 0;
+	int pXPosStart = 0;	
+	int pYPosStart = 0;
 
-	float* pXPosEnd = 0;
-	float* pYPosEnd = 0;
+	int pXPosEnd = 0;
+	int pYPosEnd = 0;
 }
 
 // Ben
@@ -35,7 +35,9 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {
-	return prAstar::teamMembers;
+
+
+	return 0;// prAstar::teamMembers;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
@@ -82,7 +84,8 @@ __declspec(dllexport) void GetStart(int& xpos, int& ypos)
 // Sets the ending location for the player.  Save the x and y values for the ending location.
 __declspec(dllexport) void SetEnd(int xpos, int ypos)
 {
-
+	prAstar::pXPosEnd = xpos;
+	prAstar::pYPosEnd = ypos;
 }
 
 // Ben
@@ -90,5 +93,6 @@ __declspec(dllexport) void SetEnd(int xpos, int ypos)
 // x and y locations for the end have not been saved yet, then return -1 for both.
 __declspec(dllexport) void GetEnd(int& xpos, int& ypos)
 {
-	
+	xpos = prAstar::pXPosEnd;
+	ypos = prAstar::pYPosEnd;
 }
