@@ -1,21 +1,82 @@
-// IGME209-04_AStar_ManualTests.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include "pch.h"
 #include <iostream>
 
-int main()
+__declspec(dllimport) char* GetTeam();
+__declspec(dllimport) void SetMaze(const int** data, int width, int height);
+__declspec(dllimport) int** GetMaze(int& width, int& height);
+__declspec(dllimport) void GetNextPosition(int& xpos, int& ypos);
+__declspec(dllimport) void SetStart(int xpos, int ypos);
+__declspec(dllimport) void GetStart(int& xpos, int& ypos);
+__declspec(dllimport) void SetEnd(int xpos, int ypos);
+__declspec(dllimport) void GetEnd(int& xpos, int& ypos);
+
+class MazeItem
 {
-    std::cout << "Hello World!\n"; 
+public:
+    int value;
+};
+
+namespace testSpace
+{
+    const int rows = 5;
+    const int columns = 5;
+
+    MazeItem** myMaze = nullptr;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+int main()
+{
+	std::cout << GetTeam() << "\n" << std::endl;
+    
+	int setX = 5;
+	int setY = 10;
+	int getX = 0;
+	int getY = 0;
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+	std::cout << "Setting X-end to 5 and y-end to 10" << std::endl;
+	std::cout << "x : " << setX << std::endl;
+	std::cout << "y : " << setY << std::endl;
+	SetEnd(setX, setY);
+
+	std::cout << "Getting X-end and Y-end" << std::endl;
+	GetEnd(getX, getY);
+
+	std::cout << "x : " << getX << std::endl;
+	std::cout << "y : " << getY << std::endl;
+
+	setX = 2;
+	setY = 20;
+
+	std::cout << "Getting X-end and Y-end" << std::endl;
+	std::cout << "x : " << setX << std::endl;
+	std::cout << "y : " << setY << std::endl;
+	SetEnd(setX, setY);
+
+	std::cout << "Getting X-end and Y-end" << std::endl;
+	GetEnd(getX, getY);
+
+	std::cout << "x : " << getX << std::endl;
+    std::cout << "y : " << getY << std::endl;
+
+    testSpace::myMaze = new MazeItem*[testSpace::rows];
+
+    for (size_t i = 0; i < testSpace::rows; i++)
+    {
+        testSpace::myMaze[i] = new MazeItem[testSpace::columns];
+    }
+
+    int counter = 1;
+
+    for (size_t i = 0; i < testSpace::rows; i++)
+    {
+        for (size_t j = 0; j < testSpace::columns; j++)
+        {
+            testSpace::myMaze[i][j].value = counter;
+            counter++;
+        }
+    }
+
+    SetMaze((const int**)testSpace::myMaze, testSpace::rows, testSpace::columns);
+
+    std::cout << std::endl;
+}
