@@ -15,6 +15,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -33,9 +34,17 @@ namespace prAstar
     const char* pTeamMembers { "The team members are Adam McAree and Benjamin Kleynhans" };
 
     Item** maze = nullptr;
+    int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int yCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+    int currentX = 0;
+    int currentY = 0;
 
     int mazeRows = 0;
     int mazeColumns = 0;
+
+    int listRows = 10;
+    int listColumns = 10;
 
     int pXPosStart = 0;
     int pYPosStart = 0;
@@ -67,13 +76,28 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
         prAstar::maze[i] = new Item[prAstar::mazeColumns];
     }
 
-    for (size_t i = 0; i < prAstar::mazeRows; i++)
+    try
     {
-        for (size_t j = 0; j < prAstar::mazeColumns; j++)
+        for (size_t i = 0; i < prAstar::mazeRows; i++)
         {
-            prAstar::maze[i][j].value = data[i][j];
+            for (size_t j = 0; j < prAstar::mazeColumns; j++)
+            {
+                if ((data[i][j] == 0) || (data[i][j] == 1))
+                {
+                    prAstar::maze[i][j].value = data[i][j];
+                }
+                else
+                {
+                    throw 1;
+                }
+            }
         }
     }
+    catch (int e)
+    {
+        std::cout << "An exception occurred.  Exception Nr. " << e << '\n';
+    }
+    
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
@@ -92,8 +116,8 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
     for (size_t i = 0; i < prAstar::mazeRows; i++)
     {
         for (size_t j = 0; j < prAstar::mazeColumns; j++)
-        {
-            maze[i][j] = prAstar::maze[i][j].value;
+        {            
+           maze[i][j] = prAstar::maze[i][j].value;            
         }
     }
 
@@ -115,7 +139,11 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 // Return those variables for the current position.
 __declspec(dllexport) void GetNextPosition(int& xpos, int& ypos)
 {
+    xpos = prAstar::xCoords[prAstar::currentX];
+    ypos = prAstar::yCoords[prAstar::currentY];    
 
+    prAstar::currentX++;
+    prAstar::currentY++;
 }
 
 // Adam

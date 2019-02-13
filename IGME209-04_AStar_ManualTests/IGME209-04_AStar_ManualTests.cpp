@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <iostream>
 #include <limits>
+#include <time.h>
 
 __declspec(dllimport) char* GetTeam();
 __declspec(dllimport) void SetMaze(const int** data, int width, int height);
@@ -21,8 +22,8 @@ public:
 
 namespace testSpace
 {
-    const int rows = 15;
-    const int columns = 7;
+    const int rows = 5;
+    const int columns = 10;
 
     MazeItem** myMaze = nullptr;
     int** returnedMaze = nullptr;
@@ -71,15 +72,26 @@ int main()
         testSpace::returnedMaze[i] = new int[testSpace::columns];
     }
 
-    int counter = 1;
+    srand(time(NULL));
 
     for (size_t i = 0; i < testSpace::rows; i++)
     {
         for (size_t j = 0; j < testSpace::columns; j++)
         {
-            testSpace::myMaze[i][j].value = counter;            
-            counter++;
+            testSpace::myMaze[i][j].value = rand() % 2;
         }
+    }
+
+    std::cout << "\n\nPrinting maze to set\n" << std::endl;
+
+    for (size_t i = 0; i < testSpace::rows; i++)
+    {
+        for (size_t j = 0; j < testSpace::columns; j++)
+        {
+            std::cout << testSpace::myMaze[i][j].value;
+        }
+
+        std::cout << std::endl;
     }
 
     SetMaze((const int**)testSpace::myMaze, testSpace::columns, testSpace::rows);
@@ -88,6 +100,8 @@ int main()
     int getRow = 0;
 
     testSpace::returnedMaze = GetMaze(getColumn, getRow);
+
+    std::cout << "\nPrinting returned maze\n" << std::endl;
 
     for (size_t i = 0; i < testSpace::rows; i++)
     {
@@ -99,7 +113,20 @@ int main()
         std::cout << std::endl;
     }
 
+    std::cout << "\n" << std::endl;
+
     wait();
+
+    int x = 0;
+    int y = 0;
+
+    for (int i = 0; i < 10; i++)
+    {
+        GetNextPosition(x, y);
+
+        std::cout << "X: " << x << std::endl;
+        std::cout << "Y: " << y << std::endl;
+    }
 }
 
 void wait()
