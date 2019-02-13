@@ -74,8 +74,6 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
             prAstar::maze[i][j].value = data[i][j];
         }
     }
-
-    std::cout << std::endl;
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
@@ -84,7 +82,30 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
     int** maze = nullptr;
 
+    maze = new int*[prAstar::mazeRows];
 
+    for (size_t i = 0; i < prAstar::mazeRows; i++)
+    {
+        maze[i] = new int[prAstar::mazeColumns];
+    }
+    
+    for (size_t i = 0; i < prAstar::mazeRows; i++)
+    {
+        for (size_t j = 0; j < prAstar::mazeColumns; j++)
+        {
+            maze[i][j] = prAstar::maze[i][j].value;
+        }
+    }
+
+    for (size_t i = 0; i < prAstar::mazeRows; i++)
+    {
+        delete[] prAstar::maze[i];
+    }
+
+    delete prAstar::maze;
+
+    width = prAstar::mazeColumns;
+    height = prAstar::mazeRows;
 
     return maze;
 }
@@ -102,7 +123,8 @@ __declspec(dllexport) void GetNextPosition(int& xpos, int& ypos)
 // location.
 __declspec(dllexport) void SetStart(int xpos, int ypos)
 {
-
+    prAstar::pXPosStart = xpos;
+    prAstar::pYPosStart = ypos;
 }
 
 // Adam
@@ -110,7 +132,8 @@ __declspec(dllexport) void SetStart(int xpos, int ypos)
 // If the x and y locations for the start have not been saved yet, then return -1 for both.
 __declspec(dllexport) void GetStart(int& xpos, int& ypos)
 {
-
+    xpos = prAstar::pXPosStart;
+    ypos = prAstar::pYPosStart;
 }
 
 // Ben

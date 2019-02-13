@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <iostream>
+#include <limits>
 
 __declspec(dllimport) char* GetTeam();
 __declspec(dllimport) void SetMaze(const int** data, int width, int height);
@@ -10,6 +11,8 @@ __declspec(dllimport) void GetStart(int& xpos, int& ypos);
 __declspec(dllimport) void SetEnd(int xpos, int ypos);
 __declspec(dllimport) void GetEnd(int& xpos, int& ypos);
 
+void wait();
+
 class MazeItem
 {
 public:
@@ -18,10 +21,11 @@ public:
 
 namespace testSpace
 {
-    const int rows = 5;
-    const int columns = 5;
+    const int rows = 15;
+    const int columns = 7;
 
     MazeItem** myMaze = nullptr;
+    int** returnedMaze = nullptr;
 }
 
 int main()
@@ -59,10 +63,12 @@ int main()
     std::cout << "y : " << getY << std::endl;
 
     testSpace::myMaze = new MazeItem*[testSpace::rows];
+    testSpace::returnedMaze = new int*[testSpace::rows];
 
     for (size_t i = 0; i < testSpace::rows; i++)
     {
         testSpace::myMaze[i] = new MazeItem[testSpace::columns];
+        testSpace::returnedMaze[i] = new int[testSpace::columns];
     }
 
     int counter = 1;
@@ -71,12 +77,33 @@ int main()
     {
         for (size_t j = 0; j < testSpace::columns; j++)
         {
-            testSpace::myMaze[i][j].value = counter;
+            testSpace::myMaze[i][j].value = counter;            
             counter++;
         }
     }
 
-    SetMaze((const int**)testSpace::myMaze, testSpace::rows, testSpace::columns);
+    SetMaze((const int**)testSpace::myMaze, testSpace::columns, testSpace::rows);
 
-    std::cout << std::endl;
+    int getColumn = 0;
+    int getRow = 0;
+
+    testSpace::returnedMaze = GetMaze(getColumn, getRow);
+
+    for (size_t i = 0; i < testSpace::rows; i++)
+    {
+        for (size_t j = 0; j < testSpace::columns; j++)
+        {
+            std::cout << testSpace::returnedMaze[i][j];
+        }
+
+        std::cout << std::endl;
+    }
+
+    wait();
+}
+
+void wait()
+{
+    std::cout << "Press ENTER to continue...";
+    std::cin.ignore(std::numeric_limits <std::streamsize> ::max(), '\n');
 }
