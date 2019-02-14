@@ -31,7 +31,7 @@ namespace prAstar
     //const char teamMembers[60] { "Adam McAree and Benjamin Kleynhans" };
     //char* pTeamMembers = (char*)&teamMembers;
 
-    const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans" };
+    const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
 
     Item** maze = nullptr;
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -117,7 +117,7 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
         std::cout << "An exception occurred.  Exception Nr. " << e << '\n';
     }*/
     
-    std::cout << " End SetMaze \n" << std::endl;
+    //std::cout << " End SetMaze \n" << std::endl;
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
