@@ -63,20 +63,20 @@ int main()
 	std::cout << "x : " << getX << std::endl;
     std::cout << "y : " << getY << std::endl;
 
-    testSpace::myMaze = new MazeItem*[testSpace::rows];
-    testSpace::returnedMaze = new int*[testSpace::rows];
+    testSpace::myMaze = new MazeItem*[testSpace::columns];
+    testSpace::returnedMaze = new int*[testSpace::columns];
 
-    for (size_t i = 0; i < testSpace::rows; i++)
+    for (size_t i = 0; i < testSpace::columns; i++)
     {
-        testSpace::myMaze[i] = new MazeItem[testSpace::columns];
-        testSpace::returnedMaze[i] = new int[testSpace::columns];
+        testSpace::myMaze[i] = new MazeItem[testSpace::rows];
+        testSpace::returnedMaze[i] = new int[testSpace::rows];
     }
 
     srand(time(NULL));
 
-    for (size_t i = 0; i < testSpace::rows; i++)
+    for (size_t i = 0; i < testSpace::columns; i++)
     {
-        for (size_t j = 0; j < testSpace::columns; j++)
+        for (size_t j = 0; j < testSpace::rows; j++)
         {
             testSpace::myMaze[i][j].value = rand() % 2;
         }
@@ -84,9 +84,9 @@ int main()
 
     std::cout << "\n\nPrinting maze to set\n" << std::endl;
 
-    for (size_t i = 0; i < testSpace::rows; i++)
+    for (size_t i = 0; i < testSpace::columns; i++)
     {
-        for (size_t j = 0; j < testSpace::columns; j++)
+        for (size_t j = 0; j < testSpace::rows; j++)
         {
             std::cout << testSpace::myMaze[i][j].value;
         }
@@ -103,9 +103,9 @@ int main()
 
     std::cout << "\nPrinting returned maze\n" << std::endl;
 
-    for (size_t i = 0; i < testSpace::rows; i++)
+    for (size_t i = 0; i < testSpace::columns; i++)
     {
-        for (size_t j = 0; j < testSpace::columns; j++)
+        for (size_t j = 0; j < testSpace::rows; j++)
         {
             std::cout << testSpace::returnedMaze[i][j];
         }
