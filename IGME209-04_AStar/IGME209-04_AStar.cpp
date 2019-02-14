@@ -28,10 +28,10 @@ public:
 // Namespace used for global variables
 namespace prAstar
 {
-    //const char teamMembers[60] { "The team members are Adam McAree and Benjamin Kleynhans" };
+    //const char teamMembers[60] { "Adam McAree and Benjamin Kleynhans" };
     //char* pTeamMembers = (char*)&teamMembers;
 
-    const char* pTeamMembers { "The team members are Adam McAree and Benjamin Kleynhans" };
+    const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans" };
 
     Item** maze = nullptr;
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -66,17 +66,36 @@ __declspec(dllexport) char* GetTeam()
 // variable in the DLL.  Use this data for the GetMaze function.
 __declspec(dllexport) void SetMaze(const int** data, int width, int height)
 {
-    prAstar::mazeRows = height;
-    prAstar::mazeColumns = width;    
-    
+    //std::cout << " Start SetMaze " << std::endl;
+
+    prAstar::mazeRows = width;
+    prAstar::mazeColumns = height;
+        
     prAstar::maze = new Item*[prAstar::mazeRows];
 
     for (size_t i = 0; i < prAstar::mazeRows; i++)
     {
-        prAstar::maze[i] = new Item[prAstar::mazeColumns];
+        prAstar::maze[i] = new Item[prAstar::mazeColumns];    
     }
 
+    // Milestone 1 version
     try
+    {
+        for (size_t i = 0; i < prAstar::mazeRows; i++)
+        {            
+            for (size_t j = 0; j < prAstar::mazeColumns; j++)
+            {
+                prAstar::maze[i][j].value = data[i][j];
+            }
+        }
+    }
+    catch (exception& ex)
+    {
+        std::cout << ex.what() << std::endl;        
+    }
+    
+    // Final project version
+    /*try
     {
         for (size_t i = 0; i < prAstar::mazeRows; i++)
         {
@@ -96,14 +115,17 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
     catch (int e)
     {
         std::cout << "An exception occurred.  Exception Nr. " << e << '\n';
-    }
+    }*/
     
+    std::cout << " End SetMaze \n" << std::endl;
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
+    //std::cout << " Start GetMaze " << std::endl;
+
     int** maze = nullptr;
 
     maze = new int*[prAstar::mazeRows];
@@ -116,8 +138,8 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
     for (size_t i = 0; i < prAstar::mazeRows; i++)
     {
         for (size_t j = 0; j < prAstar::mazeColumns; j++)
-        {            
-           maze[i][j] = prAstar::maze[i][j].value;            
+        {
+            maze[i][j] = prAstar::maze[i][j].value;
         }
     }
 
@@ -128,8 +150,10 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 
     delete prAstar::maze;
 
-    width = prAstar::mazeColumns;
-    height = prAstar::mazeRows;
+    height = prAstar::mazeColumns;
+    width = prAstar::mazeRows;
+
+    //std::cout << " End GetMaze " << std::endl;
 
     return maze;
 }
