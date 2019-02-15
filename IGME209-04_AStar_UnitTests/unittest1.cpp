@@ -142,8 +142,15 @@ namespace IGME20904_AStar_UnitTests
             SetMaze((const int**)inputMaze, inputArrayColumns, inputArrayRows);
             outputMaze = GetMaze(outputArrayColumns, outputArrayRows);
             
-            // Compare values to ensure they are correct            
-            //Assert::AreEqual(inputMaze, outputMaze);
+            // Compare values to ensure they are correct
+            for (int i = 0; i < inputArrayColumns; i++)
+            {
+                for (int j = 0; j < inputArrayRows; j++)
+                {
+                    Assert::AreEqual(inputMaze[i][j], outputMaze[i][j]);
+                }
+            }
+
             Assert::AreEqual(inputArrayColumns, outputArrayColumns);
             Assert::AreEqual(inputArrayRows, outputArrayRows);
             
