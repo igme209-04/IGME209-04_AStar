@@ -19,22 +19,17 @@
 
 using namespace std;
 
-class Item
-{
-public:
-    int value;
-};
-
 // Namespace used for global variables
 namespace prAstar
 {
+	
+
     //const char teamMembers[60] { "Adam McAree and Benjamin Kleynhans" };
     //char* pTeamMembers = (char*)&teamMembers;
 
     const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
 
     int** maze = nullptr;
-    
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     int yCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -47,11 +42,14 @@ namespace prAstar
     int listRows = 10;
     int listColumns = 10;
 
-    int pXPosStart = 0;
-    int pYPosStart = 0;
+    int pXPosStart = -1;
+    int pYPosStart = -1;
 
-    int pXPosEnd = 0;
-    int pYPosEnd = 0;
+    int pXPosEnd = -1;
+    int pYPosEnd = -1;
+
+	float* pXPosEnd = 0;
+	float* pYPosEnd = 0;
 }
 
 // Ben
