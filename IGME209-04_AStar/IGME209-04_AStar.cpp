@@ -42,11 +42,11 @@ namespace prAstar
     int listRows = 10;
     int listColumns = 10;
 
-    int pXPosStart = 0;
-    int pYPosStart = 0;
+    int pXPosStart = -1;
+    int pYPosStart = -1;
 
-    int pXPosEnd = 0;
-    int pYPosEnd = 0;
+    int pXPosEnd = -1;
+    int pYPosEnd = -1;
 
 }
 
@@ -83,6 +83,8 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
+	width = prAstar::mazeRows;
+	height = prAstar::mazeColumns;
 	return prAstar::maze;
 }
 
@@ -91,7 +93,11 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 // Return those variables for the current position.
 __declspec(dllexport) void GetNextPosition(int& xpos, int& ypos)
 {
+	xpos = prAstar::currentX;
+	ypos = prAstar::currentY;
 
+	prAstar::currentX++;
+	prAstar::currentY++;
 }
 
 // Adam
@@ -99,7 +105,8 @@ __declspec(dllexport) void GetNextPosition(int& xpos, int& ypos)
 // location.
 __declspec(dllexport) void SetStart(int xpos, int ypos)
 {
-
+	prAstar::pXPosStart = xpos;
+	prAstar::pYPosStart = ypos;
 }
 
 // Adam
@@ -107,14 +114,16 @@ __declspec(dllexport) void SetStart(int xpos, int ypos)
 // If the x and y locations for the start have not been saved yet, then return -1 for both.
 __declspec(dllexport) void GetStart(int& xpos, int& ypos)
 {
-
+	xpos = prAstar::pXPosStart;
+	ypos = prAstar::pYPosStart;
 }
 
 // Ben
 // Sets the ending location for the player.  Save the x and y values for the ending location.
 __declspec(dllexport) void SetEnd(int xpos, int ypos)
 {
-
+	prAstar::pXPosEnd = xpos;
+	prAstar::pYPosEnd = ypos;
 }
 
 // Ben
@@ -122,5 +131,6 @@ __declspec(dllexport) void SetEnd(int xpos, int ypos)
 // x and y locations for the end have not been saved yet, then return -1 for both.
 __declspec(dllexport) void GetEnd(int& xpos, int& ypos)
 {
-	
+	xpos = prAstar::pXPosEnd;
+	ypos = prAstar::pYPosEnd;
 }
