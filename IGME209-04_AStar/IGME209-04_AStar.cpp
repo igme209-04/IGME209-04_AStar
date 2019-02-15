@@ -35,7 +35,7 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {
-	return prAstar::teamMembers;
+	return 0;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
