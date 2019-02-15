@@ -44,8 +44,13 @@ namespace IGME20904_AStar_UnitTests
             std::cout << " Unit tests complete - Performing Cleanup " << std::endl;
         }
 
+        TEST_METHOD(GetTeam_Test)
+        {
+            Assert::AreEqual("Adam McAree and Benjamin Kleynhans\n", GetTeam());
+        }
+
         // Test SetStart() and GetStart()
-		TEST_METHOD(SetStart_GetStart)
+		TEST_METHOD(SetStart_GetStart_Test)
 		{
             // Set input values
             inputX = 17;
@@ -81,7 +86,7 @@ namespace IGME20904_AStar_UnitTests
 		}
 
         // Test SetEnd() and GetEnd()
-        TEST_METHOD(SetEnd_GetEnd)
+        TEST_METHOD(SetEnd_GetEnd_Test)
         {
             // Set input values
             inputX = 17;
@@ -117,7 +122,7 @@ namespace IGME20904_AStar_UnitTests
         }
 
         // Test SetMaze() and GetMaze()
-        TEST_METHOD(SetMaze_GetMaze)
+        TEST_METHOD(SetMaze_GetMaze_Test)
         {
             // Define array size            
             inputArrayColumns = 17;
@@ -154,7 +159,7 @@ namespace IGME20904_AStar_UnitTests
         }
 
         // Test GetNextPosition with 10 entries
-        TEST_METHOD(Get_Next_Position)
+        TEST_METHOD(Get_Next_Position_Test)
         {
             // Define variables
             int x = 0;
