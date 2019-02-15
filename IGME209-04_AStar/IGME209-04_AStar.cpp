@@ -15,19 +15,39 @@
 #include "stdafx.h"
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace std;
 
 // Namespace used for global variables
 namespace prAstar
 {
-	const char* teamMembers{ "The team members are Adam McAree and Benjamin Kleynhans" };
+	
 
-	float* pXPosStart = 0;	
-	float* pYPosStart = 0;
+    //const char teamMembers[60] { "Adam McAree and Benjamin Kleynhans" };
+    //char* pTeamMembers = (char*)&teamMembers;
 
-	float* pXPosEnd = 0;
-	float* pYPosEnd = 0;
+    const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
+
+    int** maze = nullptr;
+    int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int yCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+    int currentX = 0;
+    int currentY = 0;
+
+    int mazeRows = 0;
+    int mazeColumns = 0;
+
+    int listRows = 10;
+    int listColumns = 10;
+
+    int pXPosStart = 0;
+    int pYPosStart = 0;
+
+    int pXPosEnd = 0;
+    int pYPosEnd = 0;
+
 }
 
 // Ben
@@ -35,23 +55,35 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {
-	return 0;
+	return (char*)prAstar::pTeamMembers;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
 // variable in the DLL.  Use this data for the GetMaze function.
 __declspec(dllexport) void SetMaze(const int** data, int width, int height)
 {
+	prAstar::maze = new int*[width];
+	prAstar::mazeRows = width;
+	prAstar::mazeColumns = height;
+	for (int i = 0; i < width; i++)
+	{
+		prAstar::maze[i] = new int[height];
+	}
 
+	for (int i = 0; i < width; i++)
+	{
+		for (int c = 0; c < height; c++)
+		{
+			prAstar::maze[i][c] = data[i][c];
+		}
+	}
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
-	int** maze = 0;
-
-	return maze;
+	return prAstar::maze;
 }
 
 // Returns the next x/y position to move to.  For this first part, save a list of
