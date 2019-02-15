@@ -22,12 +22,7 @@ using namespace std;
 // Namespace used for global variables
 namespace prAstar
 {
-	
-
-    //const char teamMembers[60] { "Adam McAree and Benjamin Kleynhans" };
-    //char* pTeamMembers = (char*)&teamMembers;
-
-    const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
+	const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
 
     int** maze = nullptr;
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -54,7 +49,6 @@ namespace prAstar
 // return both team member names.  There is no defined format for this.
 __declspec(dllexport) char* GetTeam()
 {   
-    //return prAstar::pTeamMembers;
     return (char*)prAstar::pTeamMembers;
 }
 
