@@ -47,9 +47,6 @@ namespace prAstar
 
     int pXPosEnd = -1;
     int pYPosEnd = -1;
-
-	float* pXPosEnd = 0;
-	float* pYPosEnd = 0;
 }
 
 // Ben
