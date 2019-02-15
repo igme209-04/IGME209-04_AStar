@@ -33,7 +33,6 @@ namespace prAstar
 
     const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
 
-    //Item** maze = nullptr;    // Use this for maze as object
     int** maze = nullptr;
     
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -72,13 +71,11 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
 
     prAstar::mazeRows = width;
     prAstar::mazeColumns = height;
-        
-    //prAstar::maze = new Item*[prAstar::mazeRows];                 // Use this for maze as object
+    
     prAstar::maze = new int*[prAstar::mazeRows];
 
     for (size_t i = 0; i < prAstar::mazeRows; i++)
     {
-        //prAstar::maze[i] = new Item[prAstar::mazeColumns];        // Use this for maze as object
         prAstar::maze[i] = new int[prAstar::mazeColumns];
     }
 
@@ -89,7 +86,6 @@ __declspec(dllexport) void SetMaze(const int** data, int width, int height)
         {            
             for (size_t j = 0; j < prAstar::mazeColumns; j++)
             {
-                //prAstar::maze[i][j].value = data[i][j];           // Use this for maze as object
                 prAstar::maze[i][j] = data[i][j];
             }
         }
@@ -131,38 +127,12 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
     //std::cout << " Start GetMaze " << std::endl;
 
-    int** maze = nullptr;
-
-    maze = new int*[prAstar::mazeRows];
-
-    for (size_t i = 0; i < prAstar::mazeRows; i++)
-    {
-        maze[i] = new int[prAstar::mazeColumns];
-    }
-    
-    for (size_t i = 0; i < prAstar::mazeRows; i++)
-    {
-        for (size_t j = 0; j < prAstar::mazeColumns; j++)
-        {
-            //maze[i][j] = prAstar::maze[i][j].value;               // Use this for maze as object    
-            maze[i][j] = prAstar::maze[i][j];
-        }
-    }
-
-    for (size_t i = 0; i < prAstar::mazeRows; i++)
-    {
-        delete[] prAstar::maze[i];
-    }
-
-    delete prAstar::maze;
-
     height = prAstar::mazeColumns;
     width = prAstar::mazeRows;
 
     //std::cout << " End GetMaze " << std::endl;
 
-    return maze;
-    //return prAstar::maze;
+    return prAstar::maze;
 }
 
 // Returns the next x/y position to move to.  For this first part, save a list of
