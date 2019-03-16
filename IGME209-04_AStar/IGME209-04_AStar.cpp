@@ -41,9 +41,13 @@ namespace prAstar
 
     int pXPosStart = -1;
     int pYPosStart = -1;
+	bool startPosValid = false;
 
     int pXPosEnd = -1;
     int pYPosEnd = -1;
+	bool endPosValid = false;
+
+	bool returnValue;
 }
 
 // Ben
@@ -58,7 +62,7 @@ __declspec(dllexport) char* GetTeam()
 // variable in the DLL.  Use this data for the GetMaze function.
 __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 {
-	bool returnValue = false;
+	prAstar::returnValue = false;
 
 	std::cout << " Start SetMaze " << std::endl;
 
@@ -92,7 +96,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 				}
 			}
 
-			returnValue = true;
+			prAstar::returnValue = true;
 			prAstar::validMaze = true;
 		}
 		catch (int e)
@@ -103,7 +107,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 
 	std::cout << " End SetMaze \n" << std::endl;
 
-	return returnValue;
+	return prAstar::returnValue;
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
@@ -133,7 +137,7 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 // Return those variables for the current position.
 __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 {
-	bool returnValue = true;
+	prAstar::returnValue = true;
 
     xpos = prAstar::xCoords[prAstar::currentX];
     ypos = prAstar::yCoords[prAstar::currentY];    
@@ -144,43 +148,77 @@ __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 	if ((prAstar::currentX == sizeof(prAstar::xCoords) / sizeof(int)) ||
 		(prAstar::currentY == sizeof(prAstar::yCoords) / sizeof(int)))
 	{
-		returnValue = false;
+		prAstar::returnValue = false;
 	}
 
-	return returnValue;
+	return prAstar::returnValue;
 }
 
 // Adam
 // Sets the starting location for the player.  Save the x and y values for the start
 // location.
-__declspec(dllexport) void SetStart(int xpos, int ypos)
+__declspec(dllexport) bool SetStart(int xpos, int ypos)
 {
-    prAstar::pXPosStart = xpos;
-    prAstar::pYPosStart = ypos;
+	prAstar::startPosValid = false;
+
+	if ((xpos >= prAstar::xCoords[0]) && 
+		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) && 
+		(ypos >= prAstar::yCoords[0]) &&
+		(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+	{
+		prAstar::pXPosStart = xpos;
+		prAstar::pYPosStart = ypos;
+
+		prAstar::startPosValid = true;
+	}
+
+	return prAstar::startPosValid;
 }
 
 // Adam
 // Gets the starting location for the player.  Return the saved x and y starting locations.
 // If the x and y locations for the start have not been saved yet, then return -1 for both.
-__declspec(dllexport) void GetStart(int& xpos, int& ypos)
+__declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 {
-    xpos = prAstar::pXPosStart;
-    ypos = prAstar::pYPosStart;
+	if (prAstar::startPosValid)
+	{
+		xpos = prAstar::pXPosStart;
+		ypos = prAstar::pYPosStart;
+	}
+
+	return  prAstar::startPosValid;
 }
 
 // Ben
 // Sets the ending location for the player.  Save the x and y values for the ending location.
-__declspec(dllexport) void SetEnd(int xpos, int ypos)
+__declspec(dllexport) bool SetEnd(int xpos, int ypos)
 {
-    prAstar::pXPosEnd = xpos;
-    prAstar::pYPosEnd = ypos;
+	prAstar::endPosValid = false;
+
+	if ((xpos >= prAstar::xCoords[0]) &&
+		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) &&
+		(ypos >= prAstar::yCoords[0]) &&
+		(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+	{
+		prAstar::pXPosEnd = xpos;
+		prAstar::pYPosEnd = ypos;
+
+		prAstar::endPosValid = true;
+	}
+
+	return prAstar::endPosValid;
 }
 
 // Ben
 // Gets the ending location for the player. Return the saved x and y end locations.  If the
 // x and y locations for the end have not been saved yet, then return -1 for both.
-__declspec(dllexport) void GetEnd(int& xpos, int& ypos)
+__declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 {
-    xpos = prAstar::pXPosEnd;
-    ypos = prAstar::pYPosEnd;
+	if (prAstar::endPosValid)
+	{
+		xpos = prAstar::pXPosEnd;
+		ypos = prAstar::pYPosEnd;
+	}
+
+	return prAstar::endPosValid;
 }

@@ -9,10 +9,10 @@ __declspec(dllimport) char* GetTeam();
 __declspec(dllimport) bool SetMaze(const int** data, int width, int height);
 __declspec(dllimport) int** GetMaze(int& width, int& height);
 __declspec(dllimport) bool GetNextPosition(int& xpos, int& ypos);
-__declspec(dllimport) void SetStart(int xpos, int ypos);
-__declspec(dllimport) void GetStart(int& xpos, int& ypos);
-__declspec(dllimport) void SetEnd(int xpos, int ypos);
-__declspec(dllimport) void GetEnd(int& xpos, int& ypos);
+__declspec(dllimport) bool SetStart(int xpos, int ypos);
+__declspec(dllimport) bool GetStart(int& xpos, int& ypos);
+__declspec(dllimport) bool SetEnd(int xpos, int ypos);
+__declspec(dllimport) bool GetEnd(int& xpos, int& ypos);
 
 namespace IGME20904_AStar_UnitTests
 {
@@ -54,7 +54,7 @@ namespace IGME20904_AStar_UnitTests
         // Test SetStart() and GetStart()
 		TEST_METHOD(SetStart_GetStart_Test)
 		{
-            // Set input values
+            // Set invalid input values
             inputX = 17;
             inputY = 39;
             
@@ -62,51 +62,113 @@ namespace IGME20904_AStar_UnitTests
             outputX = 0;
             outputY = 0;
 
-            // Run functions to set and get values
-            SetStart(inputX, inputY);
-            GetStart(outputX, outputY);
+            // Run functions to set values with INVALID input
+            success = SetStart(inputX, inputY);
+			Assert::IsFalse(success);
 
-            // Compare values to ensure they are correct
-            Assert::AreEqual(inputX, outputX);
-            Assert::AreEqual(inputY, outputY);
+			// Run functions to get values with INVALID input
+            success = GetStart(outputX, outputY);
+			Assert::IsFalse(success);
+			
+			// Set valid input values
+			inputX = 2;
+			inputY = 3;
 
-            // Change the input values
-            inputX = inputX * 2;
-            inputY = inputY * 3;
+			// Set output values to 0
+			outputX = 0;
+			outputY = 0;
+
+			// Run functions to set values with VALID input
+			success = SetStart(inputX, inputY);
+			Assert::IsTrue(success);
+
+			// Run functions to get values with VALID input
+			success = GetStart(outputX, outputY);
+			Assert::IsTrue(success);
+
+			// Compare values to ensure they are correct
+			Assert::AreEqual(inputX, outputX);
+			Assert::AreEqual(inputY, outputY);
+
+			/* This section is to re-run all the tests with changed values */
+            // Change the input values to INVALID values
+            inputX = inputX * 5;
+            inputY = inputY * 7;
 
             // Reset the output values
             outputX = 0;
             outputY = 0;
 
-            // Run functions to set and get values
-            SetStart(inputX, inputY);
-            GetStart(outputX, outputY);
+			// Run functions to set values with INVALID input
+			success = SetStart(inputX, inputY);
+			Assert::IsFalse(success);
 
-            // Compare values to ensure they are correct
-            Assert::AreEqual(inputX, outputX);
-            Assert::AreEqual(inputY, outputY);
+			// Run functions to get values with INVALID input
+			success = GetStart(outputX, outputY);
+			Assert::IsFalse(success);
+
+			// Change the input values to VALID values
+			inputX = 2;
+			inputY = 3;
+
+			// Set output values to 0
+			outputX = 0;
+			outputY = 0;
+
+			// Run functions to set values with VALID input
+			success = SetStart(inputX, inputY);
+			Assert::IsTrue(success);
+
+			// Run functions to get values with VALID input
+			success = GetStart(outputX, outputY);
+			Assert::IsTrue(success);
+
+			// Compare values to ensure they are correct
+			Assert::AreEqual(inputX, outputX);
+			Assert::AreEqual(inputY, outputY);
 		}
 
         // Test SetEnd() and GetEnd()
         TEST_METHOD(SetEnd_GetEnd_Test)
         {
-            // Set input values
-            inputX = 17;
-            inputY = 39;
+			// Set invalid input values
+			inputX = 17;
+			inputY = 39;
 
-            // Set output values to 0
-            outputX = 0;
-            outputY = 0;
+			// Set output values to 0
+			outputX = 0;
+			outputY = 0;
 
-            // Run functions to set and get values
-            SetEnd(inputX, inputY);
-            GetEnd(outputX, outputY);
+			// Run functions to set values with INVALID input
+			success = SetEnd(inputX, inputY);
+			Assert::IsFalse(success);
+
+			// Run functions to get values with INVALID input
+			success = GetEnd(outputX, outputY);
+			Assert::IsFalse(success);
+
+			// Set valid input values
+			inputX = 7;
+			inputY = 9;
+
+			// Set output values to 0
+			outputX = 0;
+			outputY = 0;
+
+			// Run functions to set values with VALID input
+			success = SetEnd(inputX, inputY);
+			Assert::IsTrue(success);
+
+			// Run functions to get values with VALID input
+			success = GetEnd(outputX, outputY);
+			Assert::IsTrue(success);
 
             // Compare values to ensure they are correct
             Assert::AreEqual(inputX, outputX);
             Assert::AreEqual(inputY, outputY);
 
-            // Change the input values
+			/* This section is to re-run all the tests with changed values */
+			// Change the input values to INVALID values
             inputX = inputX * 2;
             inputY = inputY * 3;
 
@@ -114,13 +176,33 @@ namespace IGME20904_AStar_UnitTests
             outputX = 0;
             outputY = 0;
 
-            // Run functions to set and get values
-            SetEnd(inputX, inputY);
-            GetEnd(outputX, outputY);
+			// Run functions to set values with INVALID input
+			success = SetEnd(inputX, inputY);
+			Assert::IsFalse(success);
 
-            // Compare values to ensure they are correct
-            Assert::AreEqual(inputX, outputX);
-            Assert::AreEqual(inputY, outputY);
+			// Run functions to get values with INVALID input
+			success = GetEnd(outputX, outputY);
+			Assert::IsFalse(success);
+
+			// Change the input values to VALID values
+			inputX = 7;
+			inputY = 9;
+
+			// Set output values to 0
+			outputX = 0;
+			outputY = 0;
+
+			// Run functions to set values with VALID input
+			success = SetEnd(inputX, inputY);
+			Assert::IsTrue(success);
+
+			// Run functions to get values with VALID input
+			success = GetEnd(outputX, outputY);
+			Assert::IsTrue(success);
+
+			// Compare values to ensure they are correct
+			Assert::AreEqual(inputX, outputX);
+			Assert::AreEqual(inputY, outputY);
         }
 
         // Test SetMaze() and GetMaze()
@@ -189,6 +271,7 @@ namespace IGME20904_AStar_UnitTests
             }
 
             Assert::AreEqual(inputArrayColumns, outputArrayColumns);
+            Assert::AreEqual(inputArrayRows, outputArrayRows);
             Assert::AreEqual(inputArrayRows, outputArrayRows);
             
             // Delete input and output arrays
