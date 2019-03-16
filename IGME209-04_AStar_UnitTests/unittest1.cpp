@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include <iostream>
+#include <time.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-
 __declspec(dllimport) char* GetTeam();
-__declspec(dllimport) void SetMaze(const int** data, int width, int height);
+__declspec(dllimport) bool SetMaze(const int** data, int width, int height);
 __declspec(dllimport) int** GetMaze(int& width, int& height);
-__declspec(dllimport) void GetNextPosition(int& xpos, int& ypos);
+__declspec(dllimport) bool GetNextPosition(int& xpos, int& ypos);
 __declspec(dllimport) void SetStart(int xpos, int ypos);
 __declspec(dllimport) void GetStart(int& xpos, int& ypos);
 __declspec(dllimport) void SetEnd(int xpos, int ypos);
@@ -29,6 +29,8 @@ namespace IGME20904_AStar_UnitTests
 
     int** inputMaze = nullptr;
     int** outputMaze = nullptr;
+
+	bool success;
 
 	TEST_CLASS(AStar_Project_Tests)
 	{
@@ -124,6 +126,9 @@ namespace IGME20904_AStar_UnitTests
         // Test SetMaze() and GetMaze()
         TEST_METHOD(SetMaze_GetMaze_Test)
         {
+			// Define a random seed
+			srand((unsigned int)time(NULL));
+
             // Define array size            
             inputArrayColumns = 17;
             inputArrayRows = 15;
@@ -137,9 +142,41 @@ namespace IGME20904_AStar_UnitTests
                 inputMaze[i] = new int[inputArrayRows];
                 outputMaze[i] = new int[inputArrayRows];
             }
+
+			// Fill array with invalid values
+			for (int i = 0; i < inputArrayColumns; i++)
+			{
+				for (int j = 0; j < inputArrayRows; j++)
+				{
+					inputMaze[i][j] = rand() % 10;
+				}
+			}
+
+			// Call SetMaze to test invalid values
+			success = SetMaze((const int**)inputMaze, inputArrayColumns, inputArrayRows);
+
+			Assert::IsFalse(success);
+
+			// Call GetMaze to ensure return value is nullptr
+			outputMaze = GetMaze(outputArrayColumns, outputArrayRows);
+
+			Assert::IsTrue(outputMaze == nullptr);
+
+			// Fill array with valid values
+			for (int i = 0; i < inputArrayColumns; i++)
+			{
+				for (int j = 0; j < inputArrayRows; j++)
+				{
+					inputMaze[i][j] = rand() % 2;
+				}
+			}
             
-            // Call SetMaze and GetMaze
-            SetMaze((const int**)inputMaze, inputArrayColumns, inputArrayRows);
+            // Call SetMaze to test valid values
+            success = SetMaze((const int**)inputMaze, inputArrayColumns, inputArrayRows);
+
+			Assert::IsTrue(success);
+
+			// Call GetMaze to compare input and output mazes
             outputMaze = GetMaze(outputArrayColumns, outputArrayRows);
             
             // Compare values to ensure they are correct

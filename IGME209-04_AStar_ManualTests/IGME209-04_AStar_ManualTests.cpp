@@ -4,9 +4,9 @@
 #include <time.h>
 
 __declspec(dllimport) char* GetTeam();
-__declspec(dllimport) void SetMaze(const int** data, int width, int height);
+__declspec(dllimport) bool SetMaze(const int** data, int width, int height);
 __declspec(dllimport) int** GetMaze(int& width, int& height);
-__declspec(dllimport) void GetNextPosition(int& xpos, int& ypos);
+__declspec(dllimport) bool GetNextPosition(int& xpos, int& ypos);
 __declspec(dllimport) void SetStart(int xpos, int ypos);
 __declspec(dllimport) void GetStart(int& xpos, int& ypos);
 __declspec(dllimport) void SetEnd(int xpos, int ypos);
@@ -94,7 +94,7 @@ int main()
         std::cout << std::endl;
     }
 
-    SetMaze((const int**)testSpace::myMaze, testSpace::columns, testSpace::rows);
+    std::cout << "Maze was set : " << (SetMaze((const int**)testSpace::myMaze, testSpace::columns, testSpace::rows)) << std::endl;
 
     int getColumn = 0;
     int getRow = 0;

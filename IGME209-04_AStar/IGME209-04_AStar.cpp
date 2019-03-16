@@ -25,6 +25,8 @@ namespace prAstar
 	const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
 
     int** maze = nullptr;
+	bool validMaze = false;
+
     int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     int yCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -54,86 +56,98 @@ __declspec(dllexport) char* GetTeam()
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
 // variable in the DLL.  Use this data for the GetMaze function.
-__declspec(dllexport) void SetMaze(const int** data, int width, int height)
+__declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 {
-    //std::cout << " Start SetMaze " << std::endl;
+	bool returnValue = false;
 
-    prAstar::mazeRows = width;
-    prAstar::mazeColumns = height;
-    
-    prAstar::maze = new int*[prAstar::mazeRows];
+	std::cout << " Start SetMaze " << std::endl;
 
-    for (size_t i = 0; i < prAstar::mazeRows; i++)
-    {
-        prAstar::maze[i] = new int[prAstar::mazeColumns];
-    }
+	if ((!width <= 0) && (!height <= 0))
+	{
+		prAstar::mazeRows = width;
+		prAstar::mazeColumns = height;
 
-    // Milestone 1 version
-    try
-    {
-        for (size_t i = 0; i < prAstar::mazeRows; i++)
-        {            
-            for (size_t j = 0; j < prAstar::mazeColumns; j++)
-            {
-                prAstar::maze[i][j] = data[i][j];
-            }
-        }
-    }
-    catch (exception& ex)
-    {
-        std::cout << ex.what() << std::endl;        
-    }
-    
-    // Final project version
-    /*try
-    {
-        for (size_t i = 0; i < prAstar::mazeRows; i++)
-        {
-            for (size_t j = 0; j < prAstar::mazeColumns; j++)
-            {
-                if ((data[i][j] == 0) || (data[i][j] == 1))
-                {
-                    prAstar::maze[i][j] = data[i][j];
-                }
-                else
-                {
-                    throw 1;
-                }
-            }
-        }
-    }
-    catch (int e)
-    {
-        std::cout << "An exception occurred.  Exception Nr. " << e << '\n';
-    }*/
-    
-    //std::cout << " End SetMaze \n" << std::endl;
+		prAstar::maze = new int*[prAstar::mazeRows];
+
+		for (size_t i = 0; i < prAstar::mazeRows; i++)
+		{
+			prAstar::maze[i] = new int[prAstar::mazeColumns];
+		}
+
+		// Final project version
+		try
+		{
+			for (size_t i = 0; i < prAstar::mazeRows; i++)
+			{
+				for (size_t j = 0; j < prAstar::mazeColumns; j++)
+				{
+					if ((data[i][j] == 0) || (data[i][j] == 1))
+					{
+						prAstar::maze[i][j] = data[i][j];
+					}
+					else
+					{
+						throw 1;
+					}
+				}
+			}
+
+			returnValue = true;
+			prAstar::validMaze = true;
+		}
+		catch (int e)
+		{
+			std::cout << "An exception occurred.  Exception Nr. " << e << '\n';			
+		}
+	}
+
+	std::cout << " End SetMaze \n" << std::endl;
+
+	return returnValue;
 }
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
-    //std::cout << " Start GetMaze " << std::endl;
+    std::cout << " Start GetMaze " << std::endl;
 
     height = prAstar::mazeColumns;
     width = prAstar::mazeRows;
 
-    //std::cout << " End GetMaze " << std::endl;
+    std::cout << " End GetMaze " << std::endl;
 
-    return prAstar::maze;
+	if (prAstar::validMaze)
+	{
+		return prAstar::maze;
+	}
+	else
+	{
+		return nullptr;
+	}
+    
 }
 
 // Returns the next x/y position to move to.  For this first part, save a list of
 // x and y values (at least 10) and then keep track of which is your current location.
 // Return those variables for the current position.
-__declspec(dllexport) void GetNextPosition(int& xpos, int& ypos)
+__declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 {
+	bool returnValue = true;
+
     xpos = prAstar::xCoords[prAstar::currentX];
     ypos = prAstar::yCoords[prAstar::currentY];    
 
     prAstar::currentX++;
     prAstar::currentY++;
+
+	if ((prAstar::currentX == sizeof(prAstar::xCoords) / sizeof(int)) ||
+		(prAstar::currentY == sizeof(prAstar::yCoords) / sizeof(int)))
+	{
+		returnValue = false;
+	}
+
+	return returnValue;
 }
 
 // Adam
