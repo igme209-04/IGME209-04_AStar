@@ -222,3 +222,10 @@ __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 
 	return prAstar::endPosValid;
 }
+
+// Move the player back to the staring position
+__declspec(dllexport) void Restart()
+{
+	prAstar::currentX = prAstar::pXPosStart;
+	prAstar::currentY = prAstar::pYPosStart;
+}
