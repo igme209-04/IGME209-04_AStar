@@ -47,7 +47,15 @@ namespace prAstar
 	int pYPosEnd = -1;
 	bool endPosValid = false;
 
+	bool pathCalculated = false;
+
 	bool returnValue;
+}
+
+//calculates the path using A*
+void AstarAlgorithm()
+{
+
 }
 
 // Ben
@@ -63,6 +71,7 @@ __declspec(dllexport) char* GetTeam()
 __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 {
 	prAstar::returnValue = false;
+	prAstar::pathCalculated = false;
 
 	std::cout << " Start SetMaze " << std::endl;
 
@@ -106,6 +115,12 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 	}
 
 	std::cout << " End SetMaze \n" << std::endl;
+
+	//checks to see if conditions for calculating path are met
+	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true) 
+	{
+		AstarAlgorithm();
+	}
 
 	return prAstar::returnValue;
 }
@@ -160,6 +175,7 @@ __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 __declspec(dllexport) bool SetStart(int xpos, int ypos)
 {
 	prAstar::startPosValid = false;
+	prAstar::pathCalculated = false;
 
 	if ((xpos >= prAstar::xCoords[0]) &&
 		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) &&
@@ -170,6 +186,12 @@ __declspec(dllexport) bool SetStart(int xpos, int ypos)
 		prAstar::pYPosStart = ypos;
 
 		prAstar::startPosValid = true;
+	}
+
+	//checks to see if conditions for calculating path are met
+	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true)
+	{
+		AstarAlgorithm();
 	}
 
 	return prAstar::startPosValid;
@@ -193,7 +215,9 @@ __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 // Sets the ending location for the player.  Save the x and y values for the ending location.
 __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 {
+
 	prAstar::endPosValid = false;
+	prAstar::pathCalculated = false;
 
 	if ((xpos >= prAstar::xCoords[0]) &&
 		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) &&
@@ -204,6 +228,12 @@ __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 		prAstar::pYPosEnd = ypos;
 
 		prAstar::endPosValid = true;
+	}
+
+	//checks to see if conditions for calculating path are met
+	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true)
+	{
+		AstarAlgorithm();
 	}
 
 	return prAstar::endPosValid;
