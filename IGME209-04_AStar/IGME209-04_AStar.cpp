@@ -16,8 +16,12 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include "Graph.h"
 
 using namespace std;
+
+void ProcessPath();
+void VerifyRequirements();
 
 // Namespace used for global variables
 namespace prAstar
@@ -35,17 +39,21 @@ namespace prAstar
 
     int mazeRows = 0;
     int mazeColumns = 0;
+	bool mazeSet = false;
 
     int listRows = 10;
     int listColumns = 10;
 
-    int pXPosStart = -1;
-    int pYPosStart = -1;
+	int pPosStart[2] = { -1, -1 };
 	bool startPosValid = false;
+	bool startPosSet = false;
 
-    int pXPosEnd = -1;
-    int pYPosEnd = -1;
+	int pPosEnd[2] = { -1, -1 };
 	bool endPosValid = false;
+	bool endPosSet = false;
+
+	bool dataReady = false;
+	bool dataProcessed = false;
 
 	bool returnValue;
 }
@@ -62,18 +70,18 @@ __declspec(dllexport) char* GetTeam()
 // variable in the DLL.  Use this data for the GetMaze function.
 __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 {
+	prAstar::mazeSet = false;
 	prAstar::returnValue = false;
+	prAstar::dataProcessed = false;
 
-	std::cout << " Start SetMaze " << std::endl;
-
-	if ((!width <= 0) && (!height <= 0))
+	if (!(width <= 0) && !(height <= 0))
 	{
 		prAstar::mazeRows = width;
 		prAstar::mazeColumns = height;
 
 		prAstar::maze = new int*[prAstar::mazeRows];
 
-		for (size_t i = 0; i < prAstar::mazeRows; i++)
+		for (int i = 0; i < prAstar::mazeRows; i++)
 		{
 			prAstar::maze[i] = new int[prAstar::mazeColumns];
 		}
@@ -81,9 +89,9 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 		// Final project version
 		try
 		{
-			for (size_t i = 0; i < prAstar::mazeRows; i++)
+			for (int i = 0; i < prAstar::mazeRows; i++)
 			{
-				for (size_t j = 0; j < prAstar::mazeColumns; j++)
+				for (int j = 0; j < prAstar::mazeColumns; j++)
 				{
 					if ((data[i][j] == 0) || (data[i][j] == 1))
 					{
@@ -105,7 +113,17 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 		}
 	}
 
-	std::cout << " End SetMaze \n" << std::endl;
+	std::cout << " \nEnd SetMaze\n" << std::endl;
+
+	prAstar::mazeSet = true;
+
+	VerifyRequirements();
+
+	if (prAstar::dataReady && !prAstar::dataProcessed)
+	{
+		ProcessPath();
+		prAstar::dataProcessed = true;
+	}
 
 	return prAstar::returnValue;
 }
@@ -114,12 +132,12 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 // the SetMaze funtion, and the width/height using the references to the arguments.
 __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
-    std::cout << " Start GetMaze " << std::endl;
+    std::cout << "\nStart GetMaze\n" << std::endl;
 
     height = prAstar::mazeColumns;
     width = prAstar::mazeRows;
 
-    std::cout << " End GetMaze " << std::endl;
+    std::cout << "End GetMaze" << std::endl;
 
 	if (prAstar::validMaze)
 	{
@@ -159,17 +177,31 @@ __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 // location.
 __declspec(dllexport) bool SetStart(int xpos, int ypos)
 {
+	prAstar::startPosSet = false;
 	prAstar::startPosValid = false;
+	prAstar::dataProcessed = false;
 
 	if ((xpos >= prAstar::xCoords[0]) && 
-		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) && 
+		//(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) && 
+		(xpos <= prAstar::mazeColumns) &&
 		(ypos >= prAstar::yCoords[0]) &&
-		(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+		//(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+		(ypos <= prAstar::mazeRows))
 	{
-		prAstar::pXPosStart = xpos;
-		prAstar::pYPosStart = ypos;
+		prAstar::pPosStart[0] = xpos;
+		prAstar::pPosStart[1] = ypos;
 
 		prAstar::startPosValid = true;
+	}
+
+	prAstar::startPosSet = true;
+
+	VerifyRequirements();
+
+	if (prAstar::dataReady && !prAstar::dataProcessed)
+	{
+		ProcessPath();
+		prAstar::dataProcessed = true;
 	}
 
 	return prAstar::startPosValid;
@@ -182,8 +214,8 @@ __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 {
 	if (prAstar::startPosValid)
 	{
-		xpos = prAstar::pXPosStart;
-		ypos = prAstar::pYPosStart;
+		xpos = prAstar::pPosStart[0];
+		ypos = prAstar::pPosStart[1];
 	}
 
 	return  prAstar::startPosValid;
@@ -194,16 +226,34 @@ __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 {
 	prAstar::endPosValid = false;
+	prAstar::endPosSet = false;
+	prAstar::dataProcessed = false;
 
-	if ((xpos >= prAstar::xCoords[0]) &&
+	/*if ((xpos >= prAstar::xCoords[0]) &&
 		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) &&
 		(ypos >= prAstar::yCoords[0]) &&
-		(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+		(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))*/
+	if ((xpos >= prAstar::xCoords[0]) &&
+		//(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) && 
+		(xpos <= prAstar::mazeColumns) &&
+		(ypos >= prAstar::yCoords[0]) &&
+		//(ypos <= prAstar::yCoords[(sizeof(prAstar::yCoords) / sizeof(int)) - 1]))
+		(ypos <= prAstar::mazeRows))
 	{
-		prAstar::pXPosEnd = xpos;
-		prAstar::pYPosEnd = ypos;
+		prAstar::pPosEnd[0] = xpos;
+		prAstar::pPosEnd[1] = ypos;
 
 		prAstar::endPosValid = true;
+	}
+
+	prAstar::endPosSet = true;
+
+	VerifyRequirements();
+	
+	if (prAstar::dataReady && !prAstar::dataProcessed)
+	{
+		ProcessPath();
+		prAstar::dataProcessed = true;
 	}
 
 	return prAstar::endPosValid;
@@ -216,8 +266,8 @@ __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 {
 	if (prAstar::endPosValid)
 	{
-		xpos = prAstar::pXPosEnd;
-		ypos = prAstar::pYPosEnd;
+		xpos = prAstar::pPosEnd[0];
+		ypos = prAstar::pPosEnd[1];
 	}
 
 	return prAstar::endPosValid;
@@ -226,6 +276,24 @@ __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 // Move the player back to the staring position
 __declspec(dllexport) void Restart()
 {
-	prAstar::currentX = prAstar::pXPosStart;
-	prAstar::currentY = prAstar::pYPosStart;
+	prAstar::currentX = prAstar::pPosStart[0];
+	prAstar::currentY = prAstar::pPosStart[1];
+}
+
+void VerifyRequirements()
+{
+	if (prAstar::startPosSet && prAstar::endPosSet && prAstar::mazeSet)
+	{
+		prAstar::dataReady = true;
+	}
+}
+
+void ProcessPath()
+{
+	Graph* pGraph = new Graph((const int**)prAstar::maze, prAstar::mazeRows, prAstar::mazeColumns);
+	pGraph->ShortestPath(prAstar::pPosStart, prAstar::pPosEnd);
+
+	//pGraph->ToString();
+
+	delete(pGraph);
 }
