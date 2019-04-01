@@ -138,10 +138,18 @@ void Graph::ShortestPath(int* origin, int* destination)
 		// Get adjacent unvisited
 		this->GetAdjacentUnvisited(pPriorityQueue->Peek());
 
+		for (Vertex* vertex : this->VertexList)
+		{
+			if (!(pPriorityQueue->Contains(vertex)))
+			{
+				pPriorityQueue->Enqueue(vertex);
+			}
+		}
+
 		pPriorityQueue->Peek()->SetVisited(true);
 		this->VisitedList.push_back(pPriorityQueue->Dequeue());
 
-	} while (0 != 0);// ((pPriorityQueue->Peek()->GetAddress[0] != destination[0]) && (pPriorityQueue->Peek()->GetAddress[1] != destination[1]));
+	} while ((pPriorityQueue->Peek()->GetAddress()[0] != destination[0]) && (pPriorityQueue->Peek()->GetAddress()[1] != destination[1]));
 
 	std::cout << std::endl;
 }
@@ -168,7 +176,7 @@ void Graph::GetAdjacentUnvisited(Vertex* currentVertex)
 				if (this->adjMatrix[tmpRows][tmpColumns] != 1)
 				{
 					this->VertexList.push_back(new Vertex(tmpRows, tmpColumns));
-
+					
 					// Set G Metric using both straight and diagonal movement
 					if ((i == 0) || (j == 0))
 					{
