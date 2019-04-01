@@ -4,9 +4,17 @@
 class Graph
 {
 public:
-	Graph();
+	Graph(int xMaxpar, int yMaxpar);
 	~Graph();
 	std::vector<Vertex> vertices;
-	int** matrix;
+	int xMax;
+	int yMax;
+	Vertex** matrix;
+	bool IsValid(int x, int y);
+	std::vector<Vertex> aStar(Vertex start, Vertex dest);
+
+	
+	double calculateH(int x, int y)
+
 };
 
