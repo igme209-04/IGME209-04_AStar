@@ -31,8 +31,8 @@ namespace prAstar
 	int** maze = nullptr;
 	bool validMaze = false;
 
-	int xCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	int yCoords[10]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	int xCoords[10]{ 0, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	int yCoords[10]{ 0, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
 	int currentX = 0;
 	int currentY = 0;
@@ -56,15 +56,15 @@ namespace prAstar
 	Vertex *startPosition = nullptr;
 	Vertex *endPosition = nullptr;
 	Vertex *currentPosition = nullptr;
-	vector<Vertex> *path = new vector<Vertex>;
+	vector<Vertex *> path;
 	int countPath = 0;
 	Graph* graph = new Graph();
-
 	bool returnValue;
 }
 
 void setHuristic(Vertex* currentV, Vertex* previousV)
 {
+	//cout << "setHuristic test 1" << endl;
 	if (currentV->x - previousV->x != 0 && currentV->y - previousV->y != 0)
 	{
 		if (currentV->pathCost == -1 || previousV->pathCost + 14 < currentV->pathCost)
@@ -72,6 +72,7 @@ void setHuristic(Vertex* currentV, Vertex* previousV)
 			currentV->previousPoint = previousV;
 			currentV->pathCost = previousV->pathCost + 14;
 		}
+		//cout << "setHuristic test 2" << endl;
 	}
 	else
 	{
@@ -80,8 +81,9 @@ void setHuristic(Vertex* currentV, Vertex* previousV)
 			currentV->previousPoint = previousV;
 			currentV->pathCost = previousV->pathCost + 10;
 		}
+		//cout << "setHuristic test 3" << endl;
 	}
-
+	//cout << "setHuristic test 4" << endl;
 	if (currentV->distanceToExit == -1)
 	{
 		int xDistance = abs(currentV->x - prAstar::endPosition->x);
@@ -94,51 +96,67 @@ void setHuristic(Vertex* currentV, Vertex* previousV)
 		{
 			currentV->distanceToExit = xDistance * 14 + (yDistance - xDistance) * 10;
 		}
+		//cout << "setHuristic test 5" << endl;
 	}
-
+	//cout << "setHuristic test 6" << endl;
 	currentV->heuristic = currentV->distanceToExit + currentV->pathCost;
-	cout << "setHuristic";
+	//cout << "setHuristic";
 }
 
 //calculates the path using A*
 void AstarAlgorithm()
 {
-	cout << "start astar";
+	//cout << endl << "start astar" << endl;
+	cout << "Size of graph: " << prAstar::graph->vertices.size() << endl;
 	for (int i = 0; i < prAstar::graph->vertices.size(); i++)
 	{
-		if (prAstar::graph->vertices[i].x == prAstar::pXPosStart && prAstar::graph->vertices[i].y == prAstar::pYPosStart)
+		cout << "x: " << prAstar::graph->vertices[i]->x << " y: " << prAstar::graph->vertices[i]->y << endl;
+		if (prAstar::graph->vertices[i]->x == prAstar::pXPosStart && prAstar::graph->vertices[i]->y == prAstar::pYPosStart)
 		{
-			*prAstar::startPosition = prAstar::graph->vertices[i];
+			prAstar::startPosition = prAstar::graph->vertices[i];
+			//cout << "start set" << endl;
 		}
-		if (prAstar::graph->vertices[i].x == prAstar::pXPosEnd && prAstar::graph->vertices[i].y == prAstar::pYPosEnd)
+		if (prAstar::graph->vertices[i]->x == prAstar::pXPosEnd && prAstar::graph->vertices[i]->y == prAstar::pYPosEnd)
 		{
-			*prAstar::endPosition = prAstar::graph->vertices[i];
+			
+			prAstar::endPosition = prAstar::graph->vertices[i];
+			//cout << "end set" << endl;
 		}
 	}
+	//cout << "end and start set" << endl;
+	//cout << "end x : " << prAstar::endPosition->x << endl;
+	//cout << "start x: " << prAstar::startPosition->x << " start y: " << prAstar::startPosition->y << endl;
 	prAstar::startPosition->pathCost = 0;
+	//cout << "is this where it ends" << endl;
 	int xDistance = abs(prAstar::startPosition->x - prAstar::endPosition->x);
 	int yDistance = abs(prAstar::startPosition->y - prAstar::endPosition->y);
-
+	//cout << "is this where it ends" << endl;
 	if (xDistance > yDistance)
 	{
+		//cout << "is this where it ends" << endl;
 		prAstar::startPosition->distanceToExit = yDistance * 14 + (xDistance - yDistance) * 10;
 	}
 	else
 	{
+		//cout << "is this where it ends" << endl;
 		prAstar::startPosition->distanceToExit = xDistance * 14 + (yDistance - xDistance) * 10;
 	}
 
+	cout << endl << "x: " << prAstar::startPosition->x << " y: " << prAstar::startPosition->y << endl;
+	
 	prAstar::startPosition->heuristic = prAstar::startPosition->distanceToExit + prAstar::startPosition->pathCost;
 	prAstar::startPosition->previousPoint = nullptr;
 
 	prAstar::currentPosition = prAstar::startPosition;
-	vector<Vertex> *lookedAtVertices = new vector<Vertex>;
-	lookedAtVertices->push_back(*prAstar::currentPosition);
-
-	
+	cout << "Current x: " << prAstar::currentPosition->x << " y: " << prAstar::currentPosition->y << endl;
+	vector<Vertex *> lookedAtVertices;
+	lookedAtVertices.push_back(prAstar::currentPosition);
+	//cout << "time for loop" << endl;
+	bool foundEnd = false;
+	int count = 0;
 	while (prAstar::currentPosition != prAstar::endPosition)
 	{
-
+		cout << count<< "Adjacency amount: " << prAstar::currentPosition->adjacentVertices.size() << endl << endl << endl;
 		for (int i = 0; i < prAstar::currentPosition->adjacentVertices.size(); i++)
 		{
 			if (prAstar::currentPosition->adjacentVertices[i]->previousPoint == nullptr)
@@ -149,40 +167,98 @@ void AstarAlgorithm()
 			{
 				setHuristic(prAstar::currentPosition->adjacentVertices[i], prAstar::currentPosition);
 			}
-			lookedAtVertices->push_back(*prAstar::currentPosition->adjacentVertices[i]);
+			else
+			{
+				foundEnd = true;
+			}
+			//cout << "is this where it fails in loop 1" << endl;
+			bool alreadyInList = false;
+			for (int j = 0; j < lookedAtVertices.size(); j++)
+			{
+				if (lookedAtVertices[j] == prAstar::currentPosition->adjacentVertices[i])
+				{
+					alreadyInList = true;
+				}
+			}
+			if (alreadyInList == false)
+			{
+				lookedAtVertices.push_back(prAstar::currentPosition->adjacentVertices[i]);
+			}
+			
 		}
+		//cout << "is this where it fails in loop 2" << endl;
 		prAstar::currentPosition->completed = true;
 		Vertex *nextNode = nullptr;
-		for (int i = 0; i < lookedAtVertices->size(); i++)
+
+		//cout << "is this where it fails in loop 3" << endl;
+		if (foundEnd != true)
 		{
-			if (nextNode == nullptr && (*lookedAtVertices)[i].completed == false)
+			for (int i = 0; i < lookedAtVertices.size(); i++)
 			{
-				*nextNode = (*lookedAtVertices)[i];
-			}
-			if ((*lookedAtVertices)[i] == *prAstar::endPosition || *nextNode == *prAstar::endPosition)
-			{
-				*nextNode = *prAstar::endPosition;
-			}
-			else if (nextNode->heuristic < (*lookedAtVertices)[i].heuristic && (*lookedAtVertices)[i].completed == false)
-			{
-				*nextNode = (*lookedAtVertices)[i];
+				//cout << "is this where it fails in loop 3.5" << endl;
+				if (nextNode == nullptr && lookedAtVertices[i]->completed == false)
+				{
+					//cout << "is this where it fails in loop 4" << endl;
+					nextNode = lookedAtVertices[i];
+					//cout << "is this where it fails in loop 4.5" << endl;
+				}
+				else if (nextNode != nullptr)
+				{
+					//cout << "is this where it fails in loop 3.75" << endl;
+					if (lookedAtVertices[i] == prAstar::endPosition)
+					{
+						//cout << "is this where it fails in loop 5" << endl;
+						nextNode = lookedAtVertices[i];
+						//cout << "is this where it fails in loop 5.5" << endl;
+					}
+					else if (nextNode->heuristic < lookedAtVertices[i]->heuristic && lookedAtVertices[i]->completed == false)
+					{
+						//cout << "is this where it fails in loop 6.5" << endl;
+						nextNode = lookedAtVertices[i];
+						//cout << "is this where it fails in loop 6" << endl;
+					}
+					//cout << "is this where it fails in loop 7" << endl;
+				}
 			}
 		}
 
+		else
+		{
+			for (int i = 0; i < lookedAtVertices.size(); i++)
+			{
+				if (lookedAtVertices[i] == prAstar::endPosition)
+				{
+					//cout << "is this where it fails in loop 5" << endl;
+					nextNode = lookedAtVertices[i];
+					//cout << "is this where it fails in loop 5.5" << endl;
+				}
+			}
+		}
+		
+		
+		
+		//cout << "does it get here???" << endl;
+		//cout << "x: " << nextNode->x << " y: " << nextNode->y << endl;
 		prAstar::currentPosition = nextNode;
+		count++;
 	}
-
-	vector<Vertex> *reversePath = new vector<Vertex>;
+	//cout << "does loop work" << endl;
+	vector<Vertex *> reversePath;
 
 	while (prAstar::currentPosition != prAstar::startPosition)
 	{
-		reversePath->push_back(*prAstar::currentPosition);
+		reversePath.push_back(prAstar::currentPosition);
 		prAstar::currentPosition = prAstar::currentPosition->previousPoint;
 	}
-
-	for (int reverseCount = reversePath->size() - 1; reverseCount >= 0; reverseCount--)
+	reversePath.push_back(prAstar::currentPosition);
+	for (int reverseCount = reversePath.size() - 1; reverseCount >= 0; reverseCount--)
 	{
-		prAstar::path->push_back((*reversePath)[reverseCount]);
+		prAstar::path.push_back(reversePath[reverseCount]);
+		
+	}
+	for (int i = 0; i < prAstar::path.size(); i++)
+	{
+		cout << "path x: " << prAstar::path[i]->x << " y: " << prAstar::path[i]->y << endl;
 	}
 	cout << "end astar";
 }
@@ -231,8 +307,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 						prAstar::maze[i][j] = data[i][j];
 						if (prAstar::maze[i][j] == 0)
 						{
-							Vertex *v = new Vertex(i, j);
-							prAstar::graph->vertices.push_back(*v);
+							prAstar::graph->vertices.push_back(new Vertex(i,j));
 						}
 					}
 					else
@@ -244,19 +319,22 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 
 			for (int i = 0; i < prAstar::graph->vertices.size(); i++)
 			{
-				for (int x = -1; x < 1; x++)
+				for (int x = -1; x <= 1; x++)
 				{
-					for (int y = -1; y < 1; y++)
+					for (int y = -1; y <= 1; y++)
 					{
-						Vertex *v = new Vertex(x + prAstar::graph->vertices[i].x, y + prAstar::graph->vertices[i].y);
-						for (int j = 0; j < prAstar::graph->vertices.size(); j++)
+						if ( x != 0 || y !=0)
 						{
-							if (v->x == prAstar::graph->vertices[j].x && v->y == prAstar::graph->vertices[j].y)
+							Vertex *v = new Vertex(x + prAstar::graph->vertices[i]->x, y + prAstar::graph->vertices[i]->y);
+							for (int j = 0; j < prAstar::graph->vertices.size(); j++)
 							{
-								prAstar::graph->vertices[i].adjacentVertices.push_back(&prAstar::graph->vertices[j]);
+								if (v->x == prAstar::graph->vertices[j]->x && v->y == prAstar::graph->vertices[j]->y)
+								{
+									prAstar::graph->vertices[i]->adjacentVertices.push_back(prAstar::graph->vertices[j]);
+								}
 							}
 						}
-						delete(v);
+						
 					}
 				}
 			}
@@ -274,11 +352,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 
 	
 
-	//checks to see if conditions for calculating path are met
-	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true) 
-	{
-		AstarAlgorithm();
-	}
+	
 
 	return prAstar::returnValue;
 }
@@ -311,11 +385,15 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 {
 	prAstar::returnValue = true;
-
-	if (prAstar::countPath < prAstar::path->size())
+	if (prAstar::pathCalculated == false)
 	{
-		xpos = (*prAstar::path)[prAstar::countPath].x;
-		ypos = (*prAstar::path)[prAstar::countPath].y;
+		AstarAlgorithm();
+		prAstar::pathCalculated = true;
+	}
+	if (prAstar::countPath < prAstar::path.size())
+	{
+		xpos = prAstar::path[prAstar::countPath]->x;
+		ypos = prAstar::path[prAstar::countPath]->y;
 		prAstar::countPath++;
 	}
 	else
@@ -344,8 +422,8 @@ __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 // location.
 __declspec(dllexport) bool SetStart(int xpos, int ypos)
 {
+	cout << "start setstart" << endl;
 	prAstar::startPosValid = false;
-	prAstar::pathCalculated = false;
 
 	if ((xpos >= prAstar::xCoords[0]) &&
 		(xpos <= prAstar::xCoords[(sizeof(prAstar::xCoords) / sizeof(int)) - 1]) &&
@@ -358,12 +436,7 @@ __declspec(dllexport) bool SetStart(int xpos, int ypos)
 		prAstar::startPosValid = true;
 	}
 
-	//checks to see if conditions for calculating path are met
-	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true)
-	{
-		AstarAlgorithm();
-	}
-
+	cout << "end setstart" << endl;
 	return prAstar::startPosValid;
 }
 
@@ -372,12 +445,13 @@ __declspec(dllexport) bool SetStart(int xpos, int ypos)
 // If the x and y locations for the start have not been saved yet, then return -1 for both.
 __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 {
+	cout << "start getstart";
 	if (prAstar::startPosValid)
 	{
 		xpos = prAstar::pXPosStart;
 		ypos = prAstar::pYPosStart;
 	}
-
+	cout << "end getstart";
 	return  prAstar::startPosValid;
 }
 
@@ -385,7 +459,7 @@ __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 // Sets the ending location for the player.  Save the x and y values for the ending location.
 __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 {
-
+	cout << "start setend";
 	prAstar::endPosValid = false;
 	prAstar::pathCalculated = false;
 
@@ -400,11 +474,8 @@ __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 	}
 
 	//checks to see if conditions for calculating path are met
-	if (prAstar::validMaze == true && prAstar::startPosValid == true && prAstar::endPosValid == true && prAstar::pathCalculated != true)
-	{
-		AstarAlgorithm();
-	}
-
+	
+	cout << "end setend";
 	return prAstar::endPosValid;
 }
 
@@ -413,23 +484,28 @@ __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 // x and y locations for the end have not been saved yet, then return -1 for both.
 __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 {
+	cout << "start getend";
 	if (prAstar::endPosValid)
 	{
 		xpos = prAstar::pXPosEnd;
 		ypos = prAstar::pYPosEnd;
 	}
-
+	cout << "end getend";
 	return prAstar::endPosValid;
 }
 
 // Move the player back to the staring position
 __declspec(dllexport) bool Restart()
 {
+	cout << "start restart";
 	if (prAstar::currentX = -1)
 	{
+		cout << "end restart";
 		return false;
 	}
+
 	prAstar::currentX = prAstar::pXPosStart;
 	prAstar::currentY = prAstar::pYPosStart;
+	cout << "end restart";
 	return true;
 }

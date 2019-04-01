@@ -4,7 +4,7 @@
 
 using namespace std;
 
-//vector<Vertex> vertices;
+vector<Vertex *> vertices;
 Graph::Graph()
 {
 

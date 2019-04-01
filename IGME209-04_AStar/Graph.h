@@ -6,6 +6,6 @@ class Graph
 public:
 	Graph();
 	~Graph();
-	std::vector<Vertex> vertices;
+	std::vector<Vertex *> vertices;
 };
 
