@@ -343,6 +343,10 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 								{
 									prAstar::graph->vertices[i]->adjacentVertices.push_back(prAstar::graph->vertices[j]);
 								}
+								else
+								{
+									delete v;
+								}
 							}
 						}
 						
