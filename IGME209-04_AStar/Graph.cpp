@@ -13,6 +13,7 @@ Graph::Graph()
 
 Graph::~Graph()
 {
-
+	for (vector<Vertex *>::iterator i = vertices.begin(); i != vertices.end(); i++)
+		delete *i;
 }
 
