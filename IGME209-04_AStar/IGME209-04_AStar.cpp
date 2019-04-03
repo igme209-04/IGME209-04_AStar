@@ -285,5 +285,7 @@ void ProcessPath()
 	Graph* pGraph = new Graph((const int**)prAstar::maze, prAstar::mazeRows, prAstar::mazeColumns);
 	prAstar::shortestPath = pGraph->CalculateShortestPath(prAstar::pPosStart, prAstar::pPosEnd);
 
+	// Still need to delete the returned array.
+
 	delete(pGraph);
 }
