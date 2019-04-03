@@ -17,7 +17,7 @@ __declspec(dllimport) bool SetStart(int xpos, int ypos);
 __declspec(dllimport) bool GetStart(int& xpos, int& ypos);
 __declspec(dllimport) bool SetEnd(int xpos, int ypos);
 __declspec(dllimport) bool GetEnd(int& xpos, int& ypos);
-__declspec(dllimport) void Restart();
+__declspec(dllimport) bool Restart();
 
 void SetRemoteStart(int*);
 void SetRemoteEnd(int*);

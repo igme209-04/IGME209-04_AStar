@@ -16,6 +16,12 @@
 #include <iostream>
 #include "PriorityQueue.h"
 
+struct MazeItem
+{
+public:
+	int value;
+};
+
 class Graph
 {
 public:
@@ -23,12 +29,13 @@ public:
 
 	static std::list<Vertex*> VertexList;
 
-	//void InstantiateVertices();
 	void InstantiateVertex(int*);
 	void ResetSearchTree();
 	void ResetVisited();
-	void ShortestPath(int*, int*);	
-	void FindPath(int*, int*);
+	MazeItem** CalculateShortestPath(int*, int*);
+	int Combine(int, int);
+	MazeItem** shortestPath = nullptr;
+	int CalculateGMetric(int, int);
 
 	void SetColumns(const int);
 	int& GetColumns();
@@ -38,7 +45,7 @@ public:
 	int* GetOrigin();
 	void SetDestination(int*);
 	int* GetDestination();
-
+	
 	std::string ToString();
 	void DeleteVertices();
 	
@@ -48,11 +55,12 @@ private:
 	static int rows;
 	static int columns;
 	static std::list<Vertex*> VisitedList;
+	std::list<Vertex*> VisitedVertices;
 	const int** adjMatrix;
 	static int* origin;
 	static int* destination;
-
-	void UpdateFinals(std::list<Vertex*>);
+	
+	void UpdateFinals();
 	void GetAdjacentUnvisited(Vertex*);
 };
 
@@ -66,14 +74,14 @@ int* Graph::destination;
 // Parameterized constructor
 Graph::Graph(const int** maze, int& rows, int& columns)
 {
-	std::cout << "\nCreating Graph\n" << std::endl;
+	//std::cout << "\nCreating Graph" << std::endl;
+	
 	VertexList.clear();
 	VisitedList.clear();
 	this->adjMatrix = maze;
 	this->SetRows(rows);
-	this->SetColumns(columns);	
-
-	//this->InstantiateVertices();
+	this->SetColumns(columns);
+	this->shortestPath = shortestPath;
 
 	std::cout << "\nGraph created" << std::endl;
 }
@@ -82,20 +90,6 @@ void Graph::InstantiateVertex(int*)
 {
 
 }
-
-//void Graph::InstantiateVertices()
-//{
-//	for (int row = 0; row < this->GetRows(); row++)
-//	{
-//		for (int column = 0; column < this->GetColumns(); column++)
-//		{
-//			if (this->adjMatrix[row][column] == 0)
-//			{
-//				VertexList.push_back(new Vertex(row, column));
-//			}
-//		}
-//	}
-//}
 
 // Reset the search tree
 void Graph::ResetSearchTree()
@@ -116,7 +110,7 @@ void Graph::ResetVisited()
 }
 
 // A* - Calculate the shortest path
-void Graph::ShortestPath(int* origin, int* destination)
+MazeItem** Graph::CalculateShortestPath(int* origin, int* destination)
 {
 	this->SetOrigin(origin);
 	this->SetDestination(destination);
@@ -127,10 +121,12 @@ void Graph::ShortestPath(int* origin, int* destination)
 
 	// Add the origin vertex to the priority queue
 	pPriorityQueue->Enqueue(new Vertex(origin[0], origin[1]));
+	this->VisitedVertices.push_back(pPriorityQueue->Peek());	
 	pPriorityQueue->Peek()->SetHMetric(0);
 	pPriorityQueue->Peek()->SetGMetric(0);
-	pPriorityQueue->Peek()->Setfinal(true);
 	pPriorityQueue->Peek()->SetVisited(true);
+
+	bool breakLoop = false;
 
 	// A* loop
 	do
@@ -140,70 +136,182 @@ void Graph::ShortestPath(int* origin, int* destination)
 
 		for (Vertex* vertex : this->VertexList)
 		{
-			if (!(pPriorityQueue->Contains(vertex)))
-			{
+			if (!(pPriorityQueue->Contains(vertex)) && !(vertex->GetFinal()))
+			{	
+				vertex->SetVisited(true);
 				pPriorityQueue->Enqueue(vertex);
 			}
 		}
 
-		pPriorityQueue->Peek()->SetVisited(true);
-		this->VisitedList.push_back(pPriorityQueue->Dequeue());
+		pPriorityQueue->Peek()->SetFinal(true);
+		VisitedList.push_back(pPriorityQueue->Dequeue());
 
-	} while ((pPriorityQueue->Peek()->GetAddress()[0] != destination[0]) && (pPriorityQueue->Peek()->GetAddress()[1] != destination[1]));
+		//std::cout << VisitedList.back()->GetAddress()[0] <<  "," << VisitedList.back()->GetAddress()[1] << std::endl;
 
-	std::cout << std::endl;
+		if (pPriorityQueue->Peek() != nullptr)
+		{
+			if (((pPriorityQueue->Peek()->GetAddress()[0] == destination[0]) && (pPriorityQueue->Peek()->GetAddress()[1] == destination[1])) ||
+				(pPriorityQueue->Peek() == nullptr))
+			{
+				breakLoop = true;
+			}
+		}
+		else
+		{
+			breakLoop = true;
+		}
+		
+	} while (!breakLoop);
+
+	if (pPriorityQueue->Peek() != nullptr)
+	{
+		VisitedList.push_back(pPriorityQueue->Dequeue());
+
+		//std::cout << "\n !!! Goal Reached !!! \n" << std::endl;
+
+		this->UpdateFinals();
+	}
+	else
+	{
+		this->shortestPath = nullptr;
+	}
+
+	return this->shortestPath;
 }
 
 void Graph::GetAdjacentUnvisited(Vertex* currentVertex)
 {
+	Vertex* tempVertex = nullptr;
 	int addressModifiers[3] = { -1, 0, 1 };
 	int* pCurrentAddress = currentVertex->GetAddress();
 
 	int tmpColumns = 0;
 	int tmpRows = 0;
 
+	bool alreadyAdded = false;
+
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
+			alreadyAdded = false;
+
 			 tmpRows = pCurrentAddress[0] + addressModifiers[i];
 			 tmpColumns = pCurrentAddress[1] + addressModifiers[j];
 
+			 for (Vertex* vertex : this->VisitedVertices)
+			 {
+				 if ((vertex->GetAddress()[0] == tmpRows) && (vertex->GetAddress()[1] == tmpColumns))
+				 {
+					 alreadyAdded = true;
+					 tempVertex = vertex;
+					 break;
+				 }
+			 }
+
 			if (!(tmpRows < 0) && !(tmpColumns < 0) &&
-				!(tmpRows > this->GetRows()) && !(tmpColumns > this->GetColumns()) &&
+				!(tmpRows > (this->GetRows() - 1)) && !(tmpColumns > (this->GetColumns() - 1)) &&
 				!((tmpRows == pCurrentAddress[0]) && (tmpColumns == pCurrentAddress[1])))
 			{
-				if (this->adjMatrix[tmpRows][tmpColumns] != 1)
+				if (alreadyAdded)
 				{
-					this->VertexList.push_back(new Vertex(tmpRows, tmpColumns));
-					
-					// Set G Metric using both straight and diagonal movement
-					if ((i == 0) || (j == 0))
+					if (currentVertex->GetGMetric() > (tempVertex->GetGMetric() + CalculateGMetric(addressModifiers[i], addressModifiers[j])))
 					{
-						this->VertexList.back()->SetGMetric(currentVertex->GetGMetric() + 10);
+						currentVertex->SetClosestNeighbor(tempVertex);
+						currentVertex->SetGMetric(tempVertex->GetGMetric() + CalculateGMetric(addressModifiers[i], addressModifiers[j]));
 					}
-					else
+					else if ((currentVertex->GetGMetric() + CalculateGMetric(addressModifiers[i], addressModifiers[j])) < (tempVertex->GetGMetric()))
 					{
-						this->VertexList.back()->SetGMetric(currentVertex->GetGMetric() + 14);
+						tempVertex->SetClosestNeighbor(currentVertex);
+						tempVertex->SetGMetric(currentVertex->GetGMetric() + CalculateGMetric(addressModifiers[i], addressModifiers[j]));
 					}
 
-					// Set H Metric using Pythagorean theorum squared (no sqrt)
-					this->VertexList.back()->SetHMetric((float)(pow(this->GetDestination()[1] - tmpRows, 2) + pow(this->GetDestination()[0] - tmpColumns, 2)));
-					this->VertexList.back()->SetNeighbor(currentVertex);
+					tempVertex = nullptr;
+				}
+				else
+				{
+					if (this->adjMatrix[tmpRows][tmpColumns] != 1)
+					{
+						this->VertexList.push_back(new Vertex(tmpRows, tmpColumns));
+						this->VisitedVertices.push_back(this->VertexList.back());
+
+						// Set G Metric using both straight and diagonal movement
+
+						this->VertexList.back()->SetGMetric(currentVertex->GetGMetric() + CalculateGMetric(addressModifiers[i], addressModifiers[j]));
+
+						// Set H Metric using Pythagorean theorum squared (no sqrt)
+						this->VertexList.back()->SetHMetric((float)(pow((this->GetDestination()[0] - tmpRows) * 10, 2) + pow((this->GetDestination()[1] - tmpColumns) * 10, 2)));
+						this->VertexList.back()->SetClosestNeighbor(currentVertex);
+					}
 				}
 			}
 		}
 	}
 }
 
-void Graph::UpdateFinals(std::list<Vertex*> vertex)
-{
+void Graph::UpdateFinals()
+{	
+	std::list<Vertex*> closestVertices;
+	Vertex* currentVertex = nullptr;
+	int* neighbor = nullptr;
 
+	currentVertex = VisitedList.back();
+	closestVertices.push_front(currentVertex);
+
+	while (currentVertex->GetClosestNeighbor() != nullptr)
+	{
+		currentVertex = currentVertex->GetClosestNeighbor();
+		closestVertices.push_front(currentVertex);
+	}
+
+	// Create, set and get auto maze
+	this->shortestPath = new MazeItem*[closestVertices.size()];
+
+	for (size_t i = 0; i < closestVertices.size(); i++)
+	{
+		this->shortestPath[i] = new MazeItem[2];
+	}
+
+	const int listSize = closestVertices.size();
+	
+	int counter = 0;
+
+	for (Vertex* vertex : closestVertices)
+	{
+		this->shortestPath[counter][0].value = vertex->GetAddress()[0];
+		this->shortestPath[counter][1].value = vertex->GetAddress()[1];
+
+		counter++;
+	}
 }
 
-void Graph::FindPath(int* origin, int* destination)
+int Graph::CalculateGMetric(int i, int j)
 {
+	int gMetric = 0;
 
+	// Set G Metric using both straight and diagonal movement
+	if ((i == 0) || (j == 0))
+	{
+		gMetric = 10;
+	}
+	else
+	{
+		gMetric = 14;
+	}
+
+	return gMetric;
+}
+
+int Graph::Combine(int a, int b)
+{
+	int times = 1;
+
+	do
+	{
+		times *= 10;
+	} while (times <= b);
+
+	return (a * times + b);
 }
 
 void Graph::SetColumns(const int columns)
@@ -267,7 +375,7 @@ std::string Graph::ToString()
 
 void Graph::DeleteVertices()
 {
-	std::cout << "\nDeleting Vertices\n" << std::endl;
+	//std::cout << "\nDeleting Vertices\n" << std::endl;
 
 	for (Vertex* vertex : VertexList)
 	{
@@ -276,7 +384,7 @@ void Graph::DeleteVertices()
 
 	VertexList.clear();
 
-	std::cout << "\nVertices Deleted\n" << std::endl;
+	//std::cout << "\nVertices Deleted\n" << std::endl;
 }
 
 Graph::~Graph()

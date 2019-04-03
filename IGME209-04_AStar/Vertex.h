@@ -20,11 +20,14 @@
 class Vertex
 {
 public:
+	Vertex();
 	Vertex(int&, int&);
+	Vertex(const Vertex&);
 	
 	int IncreaseCount();
 	int DecreaseCount();
 	void SetAddress(int, int);
+	void SetAddress(int*);
 	int* GetAddress();
 	void SetFMetric(float);
 	float GetFMetric();
@@ -34,13 +37,15 @@ public:
 	float GetHMetric();	
 	void SetVisited(bool);
 	bool GetVisited();
-	void Setfinal(bool);
+	void SetFinal(bool);
 	bool GetFinal();
 	void ResetVertex();
 	void ResetVisited();
 
-	void SetNeighbor(Vertex*);
-	Vertex* GetNeighbor();
+	void Debug();
+
+	void SetClosestNeighbor(Vertex*);
+	Vertex* GetClosestNeighbor();
 	std::string ToString();
 
 	~Vertex();
@@ -57,26 +62,75 @@ private:
 
 	bool visited;
 	bool final;
+	bool debug = false;
 };
 
 int Vertex::count = 0;
 
+// Default constructor
+Vertex::Vertex()
+{
+	if (debug)
+	{
+		std::cout << "Vertex default constructor called" << std::endl;
+	}
+	
+
+	this->SetAddress(0, 0);
+	this->SetClosestNeighbor(nullptr);
+
+	if (debug)
+	{
+		std::cout << "Vertex " << this->IncreaseCount() << " created with default constructor with row/column 0,0" << std::endl;
+	}
+}
+
 // Paramaterized constructor
 Vertex::Vertex(int& row, int& column)
 {
+	if (debug)
+	{
+		std::cout << "Vertex parameterized constructor called" << std::endl;
+	}	
+
 	this->SetAddress(row, column);
 
-	std::cout << "Vertex " << this->IncreaseCount() << " created with coordinates " << row << "," << column << " created" << std::endl;
+	if (debug)
+	{
+		std::cout << "Vertex " << this->IncreaseCount() << " created with row, column : " << row << "," << column << std::endl;
+	}	
+}
+
+// Copy constructor
+Vertex::Vertex(const Vertex& other)
+{
+	if (debug)
+	{
+		std::cout << "Vertex copy constructor called" << std::endl;
+	}
+	
+		
+	/*this->SetAddress(other.GetAddress());
+	this->SetGMetric(other.GetGMetric);
+	this->SetHMetric(other.GetHMetric);
+	this->SetVisited(other.GetVisited);
+	this->SetFinal(other.GetFinal);
+	this->SetClosestNeighbor(other.GetClosestNeighbor);*/
+	
+	if (debug)
+	{
+		std::cout << "Vertex  created as copy of " << this->GetAddress() << std::endl;
+	}
 }
 
 // Reset all properties of the vertex
 void Vertex::Vertex::ResetVertex()
 {
-	this->Setfinal(false);
+	this->SetFinal(false);
 	this->SetFMetric((float)INT_MAX);
 	this->SetGMetric((float)INT_MAX);
 	this->SetHMetric((float)INT_MAX);
-	this->SetNeighbor(nullptr);
+	this->SetClosestNeighbor(nullptr);
 }
 
 int Vertex::IncreaseCount()
@@ -104,6 +158,12 @@ void Vertex::SetAddress(int row, int column)
 {
 	this->address[0] = row;
 	this->address[1] = column;	
+}
+
+void Vertex::SetAddress(int* address)
+{
+	this->address[0] = address[0];
+	this->address[1] = address[1];
 }
 
 int* Vertex::GetAddress()
@@ -155,7 +215,7 @@ bool Vertex::GetVisited()
 	return this->visited;
 }
 
-void Vertex::Setfinal(bool)
+void Vertex::SetFinal(bool)
 {
 	this->final = true;
 }
@@ -165,17 +225,25 @@ bool Vertex::GetFinal()
 	return this->final;
 }
 
-void Vertex::SetNeighbor(Vertex* pVertex)
+void Vertex::SetClosestNeighbor(Vertex* pVertex)
 {
 	this->closestNeighbor = pVertex;
 }
 
-Vertex* Vertex::GetNeighbor()
+Vertex* Vertex::GetClosestNeighbor()
 {
 	return this->closestNeighbor;
 }
 
+void Vertex::Debug()
+{
+	this->debug = !this->debug;
+}
+
 Vertex::~Vertex()
 {
-	std::cout << "Vertex " << this->DecreaseCount() << " destroyed" << std::endl;
+	if (debug)
+	{
+		std::cout << "Vertex " << this->DecreaseCount() << " destroyed" << std::endl;
+	}
 }

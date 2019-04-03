@@ -29,12 +29,14 @@ public:
 	bool Contains(Vertex*);
 	int GetCount();
 	std::string ToString();
+	void Debug();
 	
 	~PriorityQueue();
 
 private:
 	int count;
 	std::list<Vertex*> ObjectList;
+	bool debug = false;
 
 	void UpdatePriority();
 };
@@ -44,7 +46,10 @@ PriorityQueue::PriorityQueue()
 {
 	this->ObjectList.clear();
 
-	std::cout << "Vertex created" << std::endl;
+	if (debug)
+	{
+		std::cout << "Vertex created" << std::endl;
+	}
 }
 
 void PriorityQueue::Enqueue(Vertex* pObject)
@@ -56,17 +61,27 @@ Vertex* PriorityQueue::Dequeue()
 {
 	Vertex* returnValue = nullptr;
 
-	returnValue = this->ObjectList.front();
-	this->ObjectList.pop_front();
+	if (this->ObjectList.size() > 0)
+	{
+		returnValue = this->ObjectList.front();
+		this->ObjectList.pop_front();
 
-	this->UpdatePriority();
+		this->UpdatePriority();
+	}
 
 	return returnValue;
 }
 
 Vertex* PriorityQueue::Peek()
 {
-	return this->ObjectList.front();
+	if (this->ObjectList.size() > 0)
+	{
+		return this->ObjectList.front();
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 bool PriorityQueue::Contains(Vertex* object)
@@ -76,18 +91,21 @@ bool PriorityQueue::Contains(Vertex* object)
 
 void PriorityQueue::UpdatePriority()
 {
-	Vertex* smallestVertex = this->ObjectList.front();
-
-	for (Vertex* listObject : ObjectList)
+	if (this->ObjectList.size() > 0)
 	{
-		if (listObject->GetFMetric() < smallestVertex->GetFMetric())
-		{
-			smallestVertex = listObject;
-		}
-	}
+		Vertex* smallestVertex = this->ObjectList.front();
 
-	this->ObjectList.remove(smallestVertex);
-	this->ObjectList.push_front(smallestVertex);
+		for (Vertex* listObject : ObjectList)
+		{
+			if (listObject->GetFMetric() < smallestVertex->GetFMetric())
+			{
+				smallestVertex = listObject;
+			}
+		}
+
+		this->ObjectList.remove(smallestVertex);
+		this->ObjectList.push_front(smallestVertex);
+	}
 }
 
 int PriorityQueue::GetCount()
@@ -95,7 +113,15 @@ int PriorityQueue::GetCount()
 	return this->count;
 }
 
+void PriorityQueue::Debug()
+{
+	this->debug = !this->debug;
+}
+
 PriorityQueue::~PriorityQueue()
 {
-	std::cout << "Queue destroyed" << std::endl;
+	if (debug)
+	{
+		std::cout << "Queue destroyed" << std::endl;
+	}
 }

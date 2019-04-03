@@ -1,35 +1,41 @@
 #include "pch.h"
+#pragma once
 #include <iostream>
 #include <limits>
 #include <time.h>
 #include "../IGME209-04_AStar/Graph.h"
 
-struct MazeItem
-{
-public:
-    int value;
-};
+//struct MazeItem
+//{
+//public:
+//    int value;
+//};
 
 namespace testSpace
 {
-    const int rows = 10;
-    const int columns = 10;
+    const int rows = 5;
+	const int columns = 5;
 
 	MazeItem** autoMaze = nullptr;
 	MazeItem** myMaze = nullptr;
 
-	int mazeTemplate[100] = {
-	//	    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-	/*0*/	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	/*1*/	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	/*2*/	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	/*3*/	0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-	/*4*/	0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
-	/*5*/	0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
-	/*6*/	0, 0, 0, 1, 0, 1, 0, 1, 0, 0,
-	/*7*/	0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
-	/*8*/	0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
-	/*9*/	0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	int mazeTemplate[25] = {
+	//	        0, 1, 2, 3, 4,// 5, 6, 7, 8, 9,//10,11,12,13,14 
+		/*0*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0,
+		/*1*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 0, 1, 1, 0,
+		/*2*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 0, 0, 1, 0, 
+		/*3*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 1, 0, 1, 0, 
+		/*4*/	0, 0, 0, 0, 0//, 1, 0, 0, 0, 0,// 0, 0, 0, 1, 0, 
+		///*5*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 1, 1, 1, 0, 
+		///*6*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0, 
+		///*7*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 0, 0, 0, 
+		///*8*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0, 
+		///*9*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0//, 1, 1, 0, 0, 0, 
+		///*10*/	1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 
+		///*11*/	0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 
+		///*12*/	0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 
+		///*13*/	0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 
+		///*14*/	0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0
 	};
 	
 	
@@ -95,20 +101,20 @@ int main()
 	//std::cout << "\n" << std::endl;
 
 	// Set and get myMaze
-	testSpace::myMaze = new MazeItem*[testSpace::columns];
-	testSpace::returnedMaze = new int*[testSpace::columns];
+	testSpace::myMaze = new MazeItem*[testSpace::rows];
+	testSpace::returnedMaze = new int*[testSpace::rows];
 
-	for (size_t i = 0; i < testSpace::columns; i++)
+	for (size_t i = 0; i < testSpace::rows; i++)
 	{
-		testSpace::myMaze[i] = new MazeItem[testSpace::rows];
-		testSpace::returnedMaze[i] = new int[testSpace::rows];
+		testSpace::myMaze[i] = new MazeItem[testSpace::columns];
+		testSpace::returnedMaze[i] = new int[testSpace::columns];
 	}
 	
 	int item = 0;
 
-	for (size_t i = 0; i < testSpace::columns; i++)
+	for (size_t i = 0; i < testSpace::rows; i++)
 	{		
-		for (size_t j = 0; j < testSpace::rows; j++)
+		for (size_t j = 0; j < testSpace::columns; j++)
 		{
 			testSpace::myMaze[i][j].value = testSpace::mazeTemplate[item];
 			item++;
@@ -117,9 +123,9 @@ int main()
 
 	std::cout << "Printing maze to set\n" << std::endl;
 
-	for (size_t i = 0; i < testSpace::columns; i++)
+	for (size_t i = 0; i < testSpace::rows; i++)
 	{
-		for (size_t j = 0; j < testSpace::rows; j++)
+		for (size_t j = 0; j < testSpace::columns; j++)
 		{
 			std::cout << testSpace::myMaze[i][j].value << " ";
 		}
@@ -127,18 +133,18 @@ int main()
 		std::cout << std::endl;
 	}
 
-	std::cout << "Maze was set : " << (SetMaze((const int**)testSpace::myMaze, testSpace::columns, testSpace::rows)) << std::endl;
+	std::cout << "Maze was set : " << (SetMaze((const int**)testSpace::myMaze, testSpace::rows, testSpace::columns)) << std::endl;
 
 	int getColumn = 0;
 	int getRow = 0;
 
-	testSpace::returnedMaze = GetMaze(getColumn, getRow);
+	testSpace::returnedMaze = GetMaze(getRow, getColumn);
 
 	std::cout << "\nPrinting returned maze\n" << std::endl;
 
-	for (size_t i = 0; i < testSpace::columns; i++)
+	for (size_t i = 0; i < testSpace::rows; i++)
 	{
-		for (size_t j = 0; j < testSpace::rows; j++)
+		for (size_t j = 0; j < testSpace::columns; j++)
 		{
 			std::cout << testSpace::returnedMaze[i][j] << " ";
 		}
@@ -149,8 +155,8 @@ int main()
 	std::cout << "\n" << std::endl;
 
 	// Test set and get of start and end points
-	int localStart[2] = { 8, 7 };	// (row/column NOT x/y)
-	int localEnd[2] = { 1, 1 };		// (row/column NOT x/y)
+	int localStart[2] = { 0, 0 };	// (row/column NOT x/y)
+	int localEnd[2] = { 3, 4 };		// (row/column NOT x/y)
 	int remoteStart[2] = { 0, 0 };
 	int remoteEnd[2] = { 0, 0 };
 
@@ -160,7 +166,7 @@ int main()
 	std::cout << "Setting Remote End to (1,1)" << std::endl;
 	SetRemoteEnd(localEnd);
 
-	std::cout << "Getting Remote Start" << std::endl;
+	/*std::cout << "Getting Remote Start" << std::endl;
 	GetRemoteStart(remoteStart);
 
 	std::cout << "Getting Remote End" << std::endl;
@@ -181,19 +187,17 @@ int main()
 	GetRemoteStart(remoteStart);
 
 	std::cout << "Getting Remote End" << std::endl;
-	GetRemoteEnd(remoteEnd);
+	GetRemoteEnd(remoteEnd);*/
 
 	std::cout << std::endl;
 
     int x = 0;
     int y = 0;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
-        GetNextPosition(x, y);
-
-        std::cout << "X: " << x << std::endl;
-        std::cout << "Y: " << y << std::endl;
+		GetNextPosition(x, y);
+        std::cout << "row/column : " << x << "," << y << std::endl;        
     }
 }
 
