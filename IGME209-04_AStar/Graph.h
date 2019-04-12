@@ -62,6 +62,8 @@ private:
 
 	void UpdateFinals();
 	void GetAdjacentUnvisited(Vertex*);
+
+	bool debug = false;
 };
 
 std::list<Vertex*> Graph::VertexList;
@@ -74,7 +76,7 @@ int* Graph::destination;
 // Parameterized constructor
 Graph::Graph(const int** maze, int& rows, int& columns)
 {
-	//std::cout << "\nCreating Graph" << std::endl;
+	if (debug) { std::cout << "\nCreating Graph" << std::endl; }
 
 	VertexList.clear();
 	VisitedList.clear();
@@ -83,7 +85,7 @@ Graph::Graph(const int** maze, int& rows, int& columns)
 	this->SetColumns(columns);
 	this->shortestPath = shortestPath;
 
-	std::cout << "\nGraph created" << std::endl;
+	if (debug) { std::cout << "\nGraph created" << std::endl; }
 }
 
 void Graph::InstantiateVertex(int*)
@@ -146,7 +148,7 @@ void Graph::CalculateShortestPath(int* origin, int* destination)
 		pPriorityQueue->Peek()->SetFinal(true);
 		VisitedList.push_back(pPriorityQueue->Dequeue());
 
-		//std::cout << VisitedList.back()->GetAddress()[0] <<  "," << VisitedList.back()->GetAddress()[1] << std::endl;
+		if (debug) { std::cout << VisitedList.back()->GetAddress()[0] << "," << VisitedList.back()->GetAddress()[1] << std::endl; }
 
 		if (pPriorityQueue->Peek() != nullptr)
 		{
@@ -167,7 +169,7 @@ void Graph::CalculateShortestPath(int* origin, int* destination)
 	{
 		VisitedList.push_back(pPriorityQueue->Dequeue());
 
-		std::cout << "\n !!! Goal Reached !!! \n" << std::endl;
+		if (debug) { std::cout << "\n !!! Goal Reached !!! \n" << std::endl; }
 
 		this->UpdateFinals();
 	}
@@ -194,17 +196,15 @@ void Graph::GetAdjacentUnvisited(Vertex* currentVertex)
 		{
 			alreadyAdded = false;
 
-			
-			{
-				std::cout << "";
-			}
-
 			tmpRows = pCurrentAddress[0] + addressModifiers[i];
 			tmpColumns = pCurrentAddress[1] + addressModifiers[j];
 
-			if (((pCurrentAddress[0] == 8) && (pCurrentAddress[1] == 5)) && ((tmpRows == 9) && (tmpColumns == 6)))
+			if (debug)
 			{
-				std::cout << "";
+				if (((pCurrentAddress[0] == 8) && (pCurrentAddress[1] == 5)) && ((tmpRows == 9) && (tmpColumns == 6)))
+				{
+					std::cout << "";
+				}
 			}
 
 			for (Vertex* vertex : this->VisitedVertices)
@@ -272,14 +272,12 @@ void Graph::UpdateFinals()
 	}
 
 	//// Create, set and get auto maze
-	//this->shortestPath = new MazeItem*[closestVertices.size()];
 	this->shortestPath = new int*[closestVertices.size()];
 
 	for (size_t i = 0; i < closestVertices.size(); i++)
 	{
 		this->shortestPath[i] = new int[2];
 	}
-
 
 	const int listSize = closestVertices.size();
 
@@ -367,7 +365,7 @@ std::string Graph::ToString()
 
 void Graph::DeleteVertices()
 {
-	//std::cout << "\nDeleting Vertices\n" << std::endl;
+	if (debug) { std::cout << "\nDeleting Vertices\n" << std::endl; }
 
 	for (Vertex* vertex : VertexList)
 	{
@@ -376,12 +374,12 @@ void Graph::DeleteVertices()
 
 	VertexList.clear();
 
-	//std::cout << "\nVertices Deleted\n" << std::endl;
+	if (debug) { std::cout << "\nVertices Deleted\n" << std::endl; }
 }
 
 Graph::~Graph()
 {
 	DeleteVertices();
 
-	std::cout << "\nGraph destroyed\n" << std::endl;
+	if (debug) { std::cout << "Graph destroyed\n" << std::endl; }
 }

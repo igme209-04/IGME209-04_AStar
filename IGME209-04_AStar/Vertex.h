@@ -90,7 +90,7 @@ Vertex::Vertex(int& row, int& column)
 {
 	if (debug)
 	{
-		//std::cout << "Vertex parameterized constructor called" << std::endl;
+		std::cout << "Vertex parameterized constructor called" << std::endl;
 	}	
 
 	this->SetAddress(row, column);
