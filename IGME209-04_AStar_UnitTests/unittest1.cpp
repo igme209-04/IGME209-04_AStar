@@ -5,15 +5,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-__declspec(dllimport) char* GetTeam();
-__declspec(dllimport) bool SetMaze(const int** data, int width, int height);
-__declspec(dllimport) int** GetMaze(int& width, int& height);
-__declspec(dllimport) bool GetNextPosition(int& xpos, int& ypos);
-__declspec(dllimport) bool SetStart(int xpos, int ypos);
-__declspec(dllimport) bool GetStart(int& xpos, int& ypos);
-__declspec(dllimport) bool SetEnd(int xpos, int ypos);
-__declspec(dllimport) bool GetEnd(int& xpos, int& ypos);
-
 namespace IGME20904_AStar_UnitTests
 {
     int inputX;

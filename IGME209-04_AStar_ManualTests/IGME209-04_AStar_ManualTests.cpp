@@ -197,7 +197,6 @@ int main()
 
 	while (GetNextPosition(x, y))
     {
-		
         std::cout << "row/column : " << x << "," << y << std::endl;        
     }
 }
