@@ -28,7 +28,7 @@ public:
 	Vertex* Peek();
 	bool Contains(Vertex*);
 	int GetCount();
-	std::string ToString();
+	void PrintQueue();
 	void Debug();
 	
 	~PriorityQueue();
@@ -116,6 +116,32 @@ int PriorityQueue::GetCount()
 void PriorityQueue::Debug()
 {
 	this->debug = !this->debug;
+}
+
+void PriorityQueue::PrintQueue()
+{	
+	int counter = 0;
+
+	std::cout << "\n	Index	|	Row 	|	Column	|	G-Value	|	H-Value	|	F-Value	|" << std::endl << std::endl;
+
+	for (Vertex* obj : ObjectList)
+	{		
+		std::cout << "	";
+		std::cout << counter;
+		std::cout << "	";
+		std::cout << obj->GetAddress()[0];
+		std::cout << "	";
+		std::cout << obj->GetAddress()[1];
+		std::cout << "	";
+		std::cout << obj->GetGMetric();
+		std::cout << "	";
+		std::cout << obj->GetHMetric();
+		std::cout << "	";
+		std::cout << obj->GetFMetric();
+		std::cout << std::endl;
+
+		counter++;
+	}
 }
 
 PriorityQueue::~PriorityQueue()

@@ -90,15 +90,15 @@ Vertex::Vertex(int& row, int& column)
 {
 	if (debug)
 	{
-		std::cout << "Vertex parameterized constructor called" << std::endl;
+		//std::cout << "Vertex parameterized constructor called" << std::endl;
 	}	
 
 	this->SetAddress(row, column);
 
 	if (debug)
 	{
-		std::cout << "Vertex " << this->IncreaseCount() << " created with row, column : " << row << "," << column << std::endl;
-	}	
+		std::cout << "\nVertex " << this->IncreaseCount() << " created at : " << row << "," << column << std::endl;
+	}
 }
 
 // Copy constructor
@@ -186,6 +186,12 @@ void Vertex::SetGMetric(float distanceToOrigin)
 	this->gMetric = distanceToOrigin;
 	
 	this->SetFMetric(this->GetGMetric() + this->GetHMetric());
+
+	if (debug)
+	{
+		std::cout << "Vertex " << this->count << " row: " << this->address[0] << " column: " << this->address[1];
+		std::cout << " G: " << this->GetGMetric() << " H: " << this->GetHMetric() << " F: " << this->GetFMetric() << std::endl;
+	}
 }
 
 float Vertex::GetGMetric()
@@ -198,6 +204,12 @@ void Vertex::SetHMetric(float distanceToDestination)
 	this->hMetric = distanceToDestination;
 
 	this->SetFMetric(this->GetGMetric() + this->GetHMetric());
+
+	if (debug)
+	{
+		std::cout << "Vertex " << this->count << " row: " << this->address[0] << " column: " << this->address[1];
+		std::cout << " G: " << this->GetGMetric() << " H: " << this->GetHMetric() << " F: " << this->GetFMetric() << std::endl;
+	}
 }
 
 float Vertex::GetHMetric()

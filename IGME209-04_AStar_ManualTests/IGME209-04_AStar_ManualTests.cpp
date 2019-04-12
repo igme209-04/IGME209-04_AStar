@@ -13,29 +13,32 @@
 
 namespace testSpace
 {
-    const int rows = 5;
-	const int columns = 5;
+    const int rows = 15;
+	const int columns = 15;
+
+	int localStart[2] = { 1, 1 };	// (row/column NOT x/y)
+	int localEnd[2] = { 9, 8 };		// (row/column NOT x/y)
 
 	MazeItem** autoMaze = nullptr;
-	MazeItem** myMaze = nullptr;
+	int** myMaze = nullptr;
 
-	int mazeTemplate[25] = {
-	//	        0, 1, 2, 3, 4,// 5, 6, 7, 8, 9,//10,11,12,13,14 
-		/*0*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0,
-		/*1*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 0, 1, 1, 0,
-		/*2*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 0, 0, 1, 0, 
-		/*3*/	0, 0, 0, 0, 0,// 1, 0, 0, 0, 0,// 1, 1, 0, 1, 0, 
-		/*4*/	0, 0, 0, 0, 0//, 1, 0, 0, 0, 0,// 0, 0, 0, 1, 0, 
-		///*5*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 1, 1, 1, 0, 
-		///*6*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0, 
-		///*7*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 0, 0, 0, 
-		///*8*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0,// 0, 0, 1, 1, 0, 
-		///*9*/	0, 0, 0, 0, 0, 1, 0, 0, 0, 0//, 1, 1, 0, 0, 0, 
-		///*10*/	1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 
-		///*11*/	0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 
-		///*12*/	0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 
-		///*13*/	0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 
-		///*14*/	0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0
+	int mazeTemplate[(rows * columns)] = {
+		//	    0	1	2	3	4	5	6	7	8	9	10	11	12	13	14
+		/*0*/	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	0,	0,	0,	0,
+		/*1*/	1,	1,	1,	1,	20,	30,	40,	50,	60,	70,	80,	90,	100,0,	0,
+		/*2*/	1,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	0,
+		/*3*/	0,	1,	0,	1,	0,	1,	1,	0,	0,	1,	1,	1,	0,	1,	0,
+		/*4*/	0,	1,	0,	60,	0,	0,	1,	0,	1,	0,	1,	1,	1,	1,	1,
+		/*5*/	0,	1,	0,	0,	70,	0,	0,	1,	0,	0,	0,	0,	1,	0,	1,
+		/*6*/	0,	1,	1,	1,	0,	80,	0,	0,	1,	0,	1,	1,	1,	0,	1,
+		/*7*/	0,	0,	0,	1,	0,	0,	90,	0,	1,	1,	0,	0,	1,	1,	1,
+		/*8*/	0,	1,	0,	1,	1,	1,	0,	100,0,	0,	1,	1,	0,	1,	0,
+		/*9*/	0,	1,	0,	0,	0,	1,	50,	50,	1,	0,	1,	0,	0,	1,	0,
+		/*10*/	1,	1,	1,	1,	0,	1,	0,	0,	0,	1,	0,	10,	0,	1,	0,
+		/*11*/	1,	0,	0,	1,	1,	1,	0,	0,	0,	30,	0,	0,	20,	1,	0,
+		/*12*/	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	1,	0,	1,	0,
+		/*13*/	1,	1,	0,	1,	1,	1,	0,	1,	1,	1,	1,	0,	1,	1,	0,
+		/*14*/	0,	1,	1,	1,	0,	1,	1,	1,	0,	1,	0,	1,	1,	0,	1
 	};
 	
 	
@@ -101,12 +104,12 @@ int main()
 	//std::cout << "\n" << std::endl;
 
 	// Set and get myMaze
-	testSpace::myMaze = new MazeItem*[testSpace::rows];
+	testSpace::myMaze = new int*[testSpace::rows];
 	testSpace::returnedMaze = new int*[testSpace::rows];
 
 	for (size_t i = 0; i < testSpace::rows; i++)
 	{
-		testSpace::myMaze[i] = new MazeItem[testSpace::columns];
+		testSpace::myMaze[i] = new int[testSpace::columns];
 		testSpace::returnedMaze[i] = new int[testSpace::columns];
 	}
 	
@@ -116,7 +119,7 @@ int main()
 	{		
 		for (size_t j = 0; j < testSpace::columns; j++)
 		{
-			testSpace::myMaze[i][j].value = testSpace::mazeTemplate[item];
+			testSpace::myMaze[i][j] = testSpace::mazeTemplate[item];
 			item++;
 		}
 	}
@@ -127,7 +130,7 @@ int main()
 	{
 		for (size_t j = 0; j < testSpace::columns; j++)
 		{
-			std::cout << testSpace::myMaze[i][j].value << " ";
+			std::cout << testSpace::myMaze[i][j] << " ";
 		}
 
 		std::cout << std::endl;
@@ -154,17 +157,15 @@ int main()
 
 	std::cout << "\n" << std::endl;
 
-	// Test set and get of start and end points
-	int localStart[2] = { 0, 0 };	// (row/column NOT x/y)
-	int localEnd[2] = { 3, 4 };		// (row/column NOT x/y)
+	// Test set and get of start and end points	
 	int remoteStart[2] = { 0, 0 };
 	int remoteEnd[2] = { 0, 0 };
 
 	std::cout << "Setting Remote Start to (8,7)" << std::endl;
-	SetRemoteStart(localStart);
+	SetRemoteStart(testSpace::localStart);
 
 	std::cout << "Setting Remote End to (1,1)" << std::endl;
-	SetRemoteEnd(localEnd);
+	SetRemoteEnd(testSpace::localEnd);
 
 	/*std::cout << "Getting Remote Start" << std::endl;
 	GetRemoteStart(remoteStart);
@@ -194,9 +195,9 @@ int main()
     int x = 0;
     int y = 0;
 
-    for (int i = 0; i < 5; i++)
+	while (GetNextPosition(x, y))
     {
-		GetNextPosition(x, y);
+		
         std::cout << "row/column : " << x << "," << y << std::endl;        
     }
 }

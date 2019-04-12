@@ -26,21 +26,22 @@ void VerifyRequirements();
 // Namespace used for global variables
 namespace prAstar
 {
-	const char* pTeamMembers { "Adam McAree and Benjamin Kleynhans\n" };
+	const char* pTeamMembers{ "Adam McAree and Benjamin Kleynhans\n" };
 
-    int** maze = nullptr;
+	int** maze = nullptr;
 	bool validMaze = false;
 
-	MazeItem** shortestPath = nullptr;
+	int** shortestPath = nullptr;
+	int pathSize = 0;
 
 	int currentStep = 0;
 
-    int mazeRows = 0;
-    int mazeColumns = 0;
+	int mazeRows = 0;
+	int mazeColumns = 0;
 	bool mazeSet = false;
 
-    int listRows = 10;
-    int listColumns = 10;
+	int listRows = 10;
+	int listColumns = 10;
 
 	int pPosStart[2] = { -1, -1 };
 	bool startPosValid = false;
@@ -59,14 +60,14 @@ namespace prAstar
 // Ben
 // Returns a string that has both team members name.  Have the C string value 
 // return both team member names.  There is no defined format for this.
-__declspec(dllexport) char* GetTeam()
-{   
-    return (char*)prAstar::pTeamMembers;
+extern "C" __declspec(dllexport) char* GetTeam()
+{
+	return (char*)prAstar::pTeamMembers;
 }
 
 // Sets the maze data from the main program into the DLL.  Save the data into a 
 // variable in the DLL.  Use this data for the GetMaze function.
-__declspec(dllexport) bool SetMaze(const int** data, int width, int height)
+extern "C" __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 {
 	prAstar::mazeSet = false;
 	prAstar::returnValue = false;
@@ -91,14 +92,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 			{
 				for (int j = 0; j < prAstar::mazeColumns; j++)
 				{
-					if ((data[i][j] == 0) || (data[i][j] == 1))
-					{
-						prAstar::maze[i][j] = data[i][j];
-					}
-					else
-					{
-						throw 1;
-					}
+					prAstar::maze[i][j] = data[i][j];
 				}
 			}
 
@@ -107,7 +101,7 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 		}
 		catch (int e)
 		{
-			std::cout << "An exception occurred.  Exception Nr. " << e << '\n';			
+			std::cout << "An exception occurred.  Exception Nr. " << e << '\n';
 		}
 	}
 
@@ -126,14 +120,10 @@ __declspec(dllexport) bool SetMaze(const int** data, int width, int height)
 
 // Gets the maze data from the DLL.  Return the maze data that was passed in using 
 // the SetMaze funtion, and the width/height using the references to the arguments.
-__declspec(dllexport) int** GetMaze(int& width, int& height)
+extern "C" __declspec(dllexport) int** GetMaze(int& width, int& height)
 {
-    std::cout << "\nStart GetMaze\n" << std::endl;
-
-    height = prAstar::mazeColumns;
-    width = prAstar::mazeRows;
-
-    std::cout << "End GetMaze" << std::endl;
+	height = prAstar::mazeColumns;
+	width = prAstar::mazeRows;
 
 	if (prAstar::validMaze)
 	{
@@ -143,20 +133,20 @@ __declspec(dllexport) int** GetMaze(int& width, int& height)
 	{
 		return nullptr;
 	}
-    
+
 }
 
 // Returns the next x/y position to move to.  For this first part, save a list of
 // x and y values (at least 10) and then keep track of which is your current location.
 // Return those variables for the current position.
-__declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
+extern "C" __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 {
 	prAstar::returnValue = true;
 
-	if (prAstar::shortestPath != nullptr)
+	if ((prAstar::shortestPath != nullptr) && (prAstar::currentStep != prAstar::pathSize))
 	{
-		xpos = prAstar::shortestPath[prAstar::currentStep][0].value;
-		ypos = prAstar::shortestPath[prAstar::currentStep][1].value;
+		xpos = prAstar::shortestPath[prAstar::currentStep][0];
+		ypos = prAstar::shortestPath[prAstar::currentStep][1];
 
 		prAstar::currentStep++;
 	}
@@ -174,7 +164,7 @@ __declspec(dllexport) bool GetNextPosition(int& xpos, int& ypos)
 // Adam
 // Sets the starting location for the player.  Save the x and y values for the start
 // location.
-__declspec(dllexport) bool SetStart(int xpos, int ypos)
+extern "C" __declspec(dllexport) bool SetStart(int xpos, int ypos)
 {
 	prAstar::startPosSet = false;
 	prAstar::startPosValid = false;
@@ -207,7 +197,7 @@ __declspec(dllexport) bool SetStart(int xpos, int ypos)
 // Adam
 // Gets the starting location for the player.  Return the saved x and y starting locations.
 // If the x and y locations for the start have not been saved yet, then return -1 for both.
-__declspec(dllexport) bool GetStart(int& xpos, int& ypos)
+extern "C" __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 {
 	if (prAstar::startPosValid)
 	{
@@ -220,7 +210,7 @@ __declspec(dllexport) bool GetStart(int& xpos, int& ypos)
 
 // Ben
 // Sets the ending location for the player.  Save the x and y values for the ending location.
-__declspec(dllexport) bool SetEnd(int xpos, int ypos)
+extern "C" __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 {
 	prAstar::endPosValid = false;
 	prAstar::endPosSet = false;
@@ -240,7 +230,7 @@ __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 	prAstar::endPosSet = true;
 
 	VerifyRequirements();
-	
+
 	if (prAstar::dataReady && !prAstar::dataProcessed)
 	{
 		ProcessPath();
@@ -253,7 +243,7 @@ __declspec(dllexport) bool SetEnd(int xpos, int ypos)
 // Ben
 // Gets the ending location for the player. Return the saved x and y end locations.  If the
 // x and y locations for the end have not been saved yet, then return -1 for both.
-__declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
+extern "C" __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 {
 	if (prAstar::endPosValid)
 	{
@@ -265,7 +255,7 @@ __declspec(dllexport) bool GetEnd(int& xpos, int& ypos)
 }
 
 // Move the player back to the staring position
-__declspec(dllexport) bool Restart()
+extern "C" __declspec(dllexport) bool Restart()
 {
 	prAstar::currentStep = 0;
 
@@ -283,7 +273,26 @@ void VerifyRequirements()
 void ProcessPath()
 {
 	Graph* pGraph = new Graph((const int**)prAstar::maze, prAstar::mazeRows, prAstar::mazeColumns);
-	prAstar::shortestPath = pGraph->CalculateShortestPath(prAstar::pPosStart, prAstar::pPosEnd);
+	pGraph->CalculateShortestPath(prAstar::pPosStart, prAstar::pPosEnd);
+	prAstar::pathSize = pGraph->closestVertices.size();
+
+	prAstar::shortestPath = new int*[prAstar::pathSize];
+
+	for (int i = 0; i < prAstar::pathSize; i++)
+	{
+		prAstar::shortestPath[i] = new int[2];
+	}
+
+	for (int i = 0; i < prAstar::pathSize; i++)
+	{
+		prAstar::shortestPath[i][0] = pGraph->shortestPath[i][0];
+		prAstar::shortestPath[i][1] = pGraph->shortestPath[i][1];
+	}
+
+	for (int i = 0; i < prAstar::pathSize; i++)
+	{
+		delete(pGraph->shortestPath[i]);
+	}
 
 	// Still need to delete the returned array.
 
