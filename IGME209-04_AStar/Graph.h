@@ -248,7 +248,8 @@ void Graph::GetAdjacentUnvisited(Vertex* currentVertex)
 						this->VertexList.back()->SetGMetric(currentVertex->GetGMetric() + this->adjMatrix[tmpRows][tmpColumns]);
 
 						// Set H Metric using Pythagorean theorum squared (no sqrt)
-						this->VertexList.back()->SetHMetric(sqrt((float)(pow((this->GetDestination()[0] - tmpRows), 2) + pow((this->GetDestination()[1] - tmpColumns), 2))));
+						this->VertexList.back()->SetHMetric((this->GetDestination()[0] + this->GetDestination()[1]) * 0.75);
+						//this->VertexList.back()->SetHMetric(sqrt((float)(pow((this->GetDestination()[0] - tmpRows), 2) + pow((this->GetDestination()[1] - tmpColumns), 2))));
 						this->VertexList.back()->SetClosestNeighbor(currentVertex);
 					}
 				}

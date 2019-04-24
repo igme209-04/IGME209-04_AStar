@@ -194,11 +194,12 @@ int main()
 
     int x = 0;
     int y = 0;
-
+	/*
 	while (GetNextPosition(x, y))
     {
         std::cout << "row/column : " << x << "," << y << std::endl;        
     }
+	*/
 }
 
 void SetRemoteStart(int* start)

@@ -17,6 +17,7 @@
 #include <string>
 #include <map>
 #include "Graph.h"
+#include <time.h>
 
 using namespace std;
 
@@ -272,6 +273,9 @@ void VerifyRequirements()
 
 void ProcessPath()
 {
+	clock_t t;
+	t = clock();
+
 	Graph* pGraph = new Graph((const int**)prAstar::maze, prAstar::mazeRows, prAstar::mazeColumns);
 	pGraph->CalculateShortestPath(prAstar::pPosStart, prAstar::pPosEnd);
 	prAstar::pathSize = pGraph->closestVertices.size();
@@ -297,4 +301,9 @@ void ProcessPath()
 	// Still need to delete the returned array.
 
 	delete(pGraph);
+
+	t = clock() - t;
+	double time_taken = ((double)t) / CLOCKS_PER_SEC;
+
+	std::cout << "Time taken : " << time_taken << std::endl;
 }
