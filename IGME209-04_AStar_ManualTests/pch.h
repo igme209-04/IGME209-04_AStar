@@ -9,6 +9,19 @@
 #ifndef PCH_H
 #define PCH_H
 
-// TODO: add headers that you want to pre-compile here
+extern "C" __declspec(dllimport) char* GetTeam();
+extern "C" __declspec(dllimport) bool SetMaze(const int** data, int width, int height);
+extern "C" __declspec(dllimport) int** GetMaze(int& width, int& height);
+extern "C" __declspec(dllimport) bool GetNextPosition(int& xpos, int& ypos);
+extern "C" __declspec(dllimport) bool SetStart(int xpos, int ypos);
+extern "C" __declspec(dllimport) bool GetStart(int& xpos, int& ypos);
+extern "C" __declspec(dllimport) bool SetEnd(int xpos, int ypos);
+extern "C" __declspec(dllimport) bool GetEnd(int& xpos, int& ypos);
+extern "C" __declspec(dllimport) bool Restart();
+
+void SetRemoteStart(int*);
+void SetRemoteEnd(int*);
+void GetRemoteStart(int*);
+void GetRemoteEnd(int*);
 
 #endif //PCH_H
